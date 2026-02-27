@@ -31,9 +31,10 @@ const megaHeaders = {
 function extractMegacloud(embedUrl, effectiveType) {
     const mainUrl = 'https://megacloud.blog';
 
-    const headers = { 'Accept': '*/*', 
-        'Referer': mainUrl, 
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0' 
+    const headers = {
+        'Accept': '*/*',
+        'Referer': mainUrl,
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0'
     };
 
 
@@ -43,8 +44,8 @@ function extractMegacloud(embedUrl, effectiveType) {
             if (!page) return [];
 
             const nonce =
-            page.match(/window\._xy_ws\s*=\s*"([^"]+)"/)?.[1] ||
-            page.match(/_is_th:([A-Za-z0-9]{48})/)?.[1];
+                page.match(/window\._xy_ws\s*=\s*"([^"]+)"/)?.[1] ||
+                page.match(/_is_th:([A-Za-z0-9]{48})/)?.[1];
 
             if (!nonce) return [];
             const id = embedUrl.split('/').pop().split('?')[0];
@@ -192,7 +193,7 @@ function getStreams(tmdbId, mediaType = 'movie', season = null, episode = null) 
                 const apis = [...HIANIME_APIS].sort(() => Math.random() - 0.5);
                 let chain = Promise.resolve([]);
 
-                apis.forEach(api => {
+                for (const api of apis) {
                     chain = chain.then(res => {
                         if (res.length) return res;
 
@@ -276,12 +277,17 @@ function getStreams(tmdbId, mediaType = 'movie', season = null, episode = null) 
                                         });
 
 
-                                        return sChain.then(() => out);
+                                        return sChain.then(() => {
+                                            if (out.length) {
+                                                return out;   // stops further API attempts
+                                            }
+                                            return [];
+                                        });
                                     });
                             });
                     });
-                });
-
+                }
+                //
                 return chain;
             });
         })
