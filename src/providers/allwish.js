@@ -23,7 +23,10 @@ const XML_HEADER = {
 // ======================
 
 function btoa(str) {
-  return Buffer.from(str, "binary").toString("base64");
+  return Buffer.from(
+    str,
+    "binary"
+  ).toString("base64");
 }
 
 async function fetchJson(
@@ -49,6 +52,84 @@ async function fetchText(
 }
 
 // ======================
+// IMDb -> TMDB
+// ======================
+
+async function resolveTmdbId(
+  id,
+  mediaType
+) {
+  if (
+    !String(id).startsWith("tt")
+  ) {
+    return id;
+  }
+
+  console.log(
+    `[TMDB] Resolving IMDb ID ${id}`
+  );
+
+  const url =
+    `https://api.themoviedb.org/3/find/${id}` +
+    `?api_key=${TMDB_API_KEY}` +
+    `&external_source=imdb_id`;
+
+  const data =
+    await fetchJson(url);
+
+  let tmdbId = null;
+
+  if (
+    mediaType === "movie"
+  ) {
+    tmdbId =
+      data?.movie_results?.[0]
+        ?.id;
+  } else {
+    tmdbId =
+      data?.tv_results?.[0]
+        ?.id;
+  }
+
+  if (!tmdbId) {
+    throw new Error(
+      "Failed to resolve TMDB ID"
+    );
+  }
+
+  console.log(
+    `[TMDB] IMDb ${id} -> TMDB ${tmdbId}`
+  );
+
+  return tmdbId;
+}
+
+// ======================
+// TMDB
+// ======================
+
+async function getTmdbTitle(
+  tmdbId,
+  mediaType
+) {
+  const tmdbUrl =
+    `https://api.themoviedb.org/3/${mediaType}/${tmdbId}` +
+    `?api_key=${TMDB_API_KEY}`;
+
+  console.log(
+    `[TMDB] Fetching ${tmdbUrl}`
+  );
+
+  const mediaInfo =
+    await fetchJson(tmdbUrl);
+
+  return (
+    mediaInfo.title ||
+    mediaInfo.name
+  );
+}
+
+// ======================
 // VRF Generator
 // ======================
 
@@ -59,7 +140,9 @@ function generateEpisodeVrf(
     "ysJhV6U27FVIjjuk";
 
   const encodedId =
-    encodeURIComponent(episodeId);
+    encodeURIComponent(
+      episodeId
+    );
 
   const keyCodes = secretKey
     .split("")
@@ -80,7 +163,11 @@ function generateEpisodeVrf(
 
   let a = 0;
 
-  for (let o = 0; o < 256; o++) {
+  for (
+    let o = 0;
+    o < 256;
+    o++
+  ) {
     a =
       (a +
         n[o] +
@@ -98,6 +185,7 @@ function generateEpisodeVrf(
   const out = [];
 
   let o = 0;
+
   a = 0;
 
   for (
@@ -122,12 +210,17 @@ function generateEpisodeVrf(
     );
   }
 
-  const bytes = new Uint8Array(
-    out.map((b) => b & 255)
-  );
+  const bytes =
+    new Uint8Array(
+      out.map(
+        (b) => b & 255
+      )
+    );
 
   const base64 = btoa(
-    String.fromCharCode(...bytes)
+    String.fromCharCode(
+      ...bytes
+    )
   )
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
@@ -146,13 +239,20 @@ function generateEpisodeVrf(
     const mod = i % 8;
 
     if (mod === 1) s += 3;
-    else if (mod === 7) s += 5;
-    else if (mod === 2) s -= 4;
-    else if (mod === 4) s -= 2;
-    else if (mod === 6) s += 4;
-    else if (mod === 0) s -= 3;
-    else if (mod === 3) s += 2;
-    else if (mod === 5) s += 5;
+    else if (mod === 7)
+      s += 5;
+    else if (mod === 2)
+      s -= 4;
+    else if (mod === 4)
+      s -= 2;
+    else if (mod === 6)
+      s += 4;
+    else if (mod === 0)
+      s -= 3;
+    else if (mod === 3)
+      s += 2;
+    else if (mod === 5)
+      s += 5;
 
     transformed.push(
       s & 255
@@ -177,7 +277,9 @@ function generateEpisodeVrf(
     /[A-Za-z]/g,
     (c) => {
       const base =
-        c <= "Z" ? 65 : 97;
+        c <= "Z"
+          ? 65
+          : 97;
 
       return String.fromCharCode(
         ((c.charCodeAt(0) -
@@ -187,64 +289,6 @@ function generateEpisodeVrf(
           base
       );
     }
-  );
-}
-
-// ======================
-// TMDB
-// ======================
-
-async function getTmdbTitle(
-  tmdbId,
-  mediaType
-) {
-  let realTmdbId = tmdbId;
-
-  // IMDb ID -> TMDB ID
-  if (
-    String(tmdbId).startsWith("tt")
-  ) {
-    const findUrl =
-      `https://api.themoviedb.org/3/find/${tmdbId}` +
-      `?api_key=${TMDB_API_KEY}` +
-      `&external_source=imdb_id`;
-
-    const findData =
-      await fetchJson(findUrl);
-
-    if (
-      mediaType === "movie"
-    ) {
-      realTmdbId =
-        findData?.movie_results?.[0]
-          ?.id;
-    } else {
-      realTmdbId =
-        findData?.tv_results?.[0]
-          ?.id;
-    }
-
-    console.log(
-      `[TMDB] IMDb ${tmdbId} -> TMDB ${realTmdbId}`
-    );
-  }
-
-  if (!realTmdbId) {
-    throw new Error(
-      "Failed to resolve TMDB ID"
-    );
-  }
-
-  const tmdbUrl =
-    `https://api.themoviedb.org/3/${mediaType}/${realTmdbId}` +
-    `?api_key=${TMDB_API_KEY}`;
-
-  const mediaInfo =
-    await fetchJson(tmdbUrl);
-
-  return (
-    mediaInfo.title ||
-    mediaInfo.name
   );
 }
 
@@ -293,7 +337,8 @@ async function extractMegaPlay(
       await fetchJson(
         megaApi,
         {
-          Referer: realUrl,
+          Referer:
+            realUrl,
 
           Origin:
             "https://megaplay.buzz",
@@ -315,15 +360,13 @@ async function extractMegaPlay(
     return [
       {
         name:
-          `AllWish - MegaPlay ` +
-          `${(
+          `AllWish - MegaPlay ${(
             sectionType ||
             "SUB"
           ).toUpperCase()}`,
 
         title:
-          `MegaPlay ` +
-          `${(
+          `MegaPlay ${(
             sectionType ||
             "SUB"
           ).toUpperCase()}`,
@@ -339,7 +382,8 @@ async function extractMegaPlay(
                 track.label ||
                 "Unknown",
 
-              url: track.file
+              url:
+                track.file
             })
           ) || [],
 
@@ -361,28 +405,6 @@ async function extractMegaPlay(
   }
 }
 
-async function resolveTmdbId(
-  id,
-  mediaType
-) {
-  if (!String(id).startsWith("tt")) {
-    return id;
-  }
-
-  const url =
-    `https://api.themoviedb.org/3/find/${id}` +
-    `?api_key=${TMDB_API_KEY}` +
-    `&external_source=imdb_id`;
-
-  const data = await fetchJson(url);
-
-  if (mediaType === "movie") {
-    return data.movie_results?.[0]?.id;
-  }
-
-  return data.tv_results?.[0]?.id;
-}
-
 // ======================
 // Main Provider
 // ======================
@@ -399,14 +421,28 @@ async function getStreams(
     );
 
     // ======================
-    // TMDB
+    // Resolve IMDb -> TMDB
+    // ======================
+
+    tmdbId =
+      await resolveTmdbId(
+        tmdbId,
+        mediaType
+      );
+
+    console.log(
+      `[AllWish] Using TMDB ID ${tmdbId}`
+    );
+
+    // ======================
+    // TMDB Title
     // ======================
 
     const title =
-    await getTmdbTitle(
-    tmdbId,
-    mediaType
-  );
+      await getTmdbTitle(
+        tmdbId,
+        mediaType
+      );
 
     if (!title) {
       console.log(
@@ -426,7 +462,9 @@ async function getStreams(
 
     const searchUrl =
       `${BASE_URL}/filter?keyword=` +
-      encodeURIComponent(title);
+      encodeURIComponent(
+        title
+      );
 
     const searchHtml =
       await fetchText(
@@ -434,7 +472,9 @@ async function getStreams(
       );
 
     const $ =
-      cheerio.load(searchHtml);
+      cheerio.load(
+        searchHtml
+      );
 
     let animeUrl = null;
 
@@ -455,7 +495,8 @@ async function getStreams(
               "http"
             )
               ? href
-              : BASE_URL + href;
+              : BASE_URL +
+                href;
 
           animeUrl =
             animeUrl.replace(
@@ -488,7 +529,9 @@ async function getStreams(
       );
 
     const $2 =
-      cheerio.load(animePage);
+      cheerio.load(
+        animePage
+      );
 
     const dataId = $2(
       "main > div.container"
@@ -516,8 +559,7 @@ async function getStreams(
       );
 
     const epListUrl =
-      `${BASE_URL}/ajax/episode/list/${dataId}` +
-      `?vrf=${vrf}`;
+      `${BASE_URL}/ajax/episode/list/${dataId}?vrf=${vrf}`;
 
     const epListRes =
       await fetchJson(
@@ -526,7 +568,8 @@ async function getStreams(
 
     if (
       !epListRes ||
-      epListRes.status !== 200
+      epListRes.status !==
+        200
     ) {
       console.log(
         "[AllWish] Episode list failed"
@@ -555,7 +598,10 @@ async function getStreams(
         );
 
       const epNum =
-        parseInt(slug, 10);
+        parseInt(
+          slug,
+          10
+        );
 
       if (
         epNum === targetEp
@@ -604,7 +650,8 @@ async function getStreams(
 
     if (
       !serverListRes ||
-      serverListRes.status !== 200
+      serverListRes.status !==
+        200
     ) {
       console.log(
         "[AllWish] Server list failed"
@@ -630,8 +677,10 @@ async function getStreams(
             "div.server-list > div.server"
           )
           .each(
-            (__,
-            server) => {
+            (
+              __,
+              server
+            ) => {
               const dataLinkId =
                 $4(server).attr(
                   "data-link-id"
@@ -662,7 +711,7 @@ async function getStreams(
     );
 
     // ======================
-    // Extract Streams
+    // Streams
     // ======================
 
     const streams = [];
@@ -690,9 +739,7 @@ async function getStreams(
         if (!realUrl)
           continue;
 
-        // ======================
         // MegaPlay
-        // ======================
 
         if (
           realUrl.includes(
@@ -715,28 +762,25 @@ async function getStreams(
           continue;
         }
 
-        // ======================
         // Fallback
-        // ======================
 
         streams.push({
           name:
-            `AllWish - ` +
-            `${(
+            `AllWish - ${(
               sectionType ||
               "SUB"
             ).toUpperCase()}`,
 
           title:
-            `AllWish ` +
-            `${(
+            `AllWish ${(
               sectionType ||
               "SUB"
             ).toUpperCase()}`,
 
           url: realUrl,
 
-          quality: "1080p"
+          quality:
+            "1080p"
         });
       } catch (err) {
         console.log(
