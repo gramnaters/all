@@ -198,8 +198,45 @@ async function getTmdbTitle(
   tmdbId,
   mediaType
 ) {
+  let realTmdbId = tmdbId;
+
+  // IMDb ID -> TMDB ID
+  if (
+    String(tmdbId).startsWith("tt")
+  ) {
+    const findUrl =
+      `https://api.themoviedb.org/3/find/${tmdbId}` +
+      `?api_key=${TMDB_API_KEY}` +
+      `&external_source=imdb_id`;
+
+    const findData =
+      await fetchJson(findUrl);
+
+    if (
+      mediaType === "movie"
+    ) {
+      realTmdbId =
+        findData?.movie_results?.[0]
+          ?.id;
+    } else {
+      realTmdbId =
+        findData?.tv_results?.[0]
+          ?.id;
+    }
+
+    console.log(
+      `[TMDB] IMDb ${tmdbId} -> TMDB ${realTmdbId}`
+    );
+  }
+
+  if (!realTmdbId) {
+    throw new Error(
+      "Failed to resolve TMDB ID"
+    );
+  }
+
   const tmdbUrl =
-    `https://api.themoviedb.org/3/${mediaType}/${tmdbId}` +
+    `https://api.themoviedb.org/3/${mediaType}/${realTmdbId}` +
     `?api_key=${TMDB_API_KEY}`;
 
   const mediaInfo =
