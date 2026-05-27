@@ -7,9 +7,9 @@ A collection of local scrapers for the Nuvio streaming application. These scrape
 1. Open Nuvio app
 2. Go to Settings → Local Scrapers
 3. Add this repository URL:
-   ```
-   https://raw.githubusercontent.com/phisher98/phisher-nuvio-providers/refs/heads/main/
-   ```
+```
+https://raw.githubusercontent.com/gramnaters/all/refs/heads/main/manifest.json
+```
 4. Enable the scrapers you want to use
 
 ## Scraper Development
