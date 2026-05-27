@@ -820,6 +820,4 @@ async function getStreams(
 // Export
 // ======================
 
-export { getStreams };
-
 module.exports = { getStreams };
