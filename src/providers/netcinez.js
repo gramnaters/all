@@ -1,7 +1,7 @@
+const cheerio = require('cheerio-without-node-native');
 // netcinez.js
 // Netcinez - Portuguese (Brazilian) movies/series provider via netcinez.si
 
-const cheerio = require('cheerio-without-node-native');
 const BASE_URL = "https://netcinez.si";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 
@@ -14,15 +14,13 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   try {
     // Step 1: Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl)).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
     // Step 2: Search Netcinez
     const searchResp = await fetch(`${BASE_URL}/?s=${encodeURIComponent(title)}`, {
-      headers: HEADERS,
-      skipSizeCheck: true
-    });
+      headers: HEADERS});
     const searchHtml = await searchResp.text();
     const $ = cheerio.load(searchHtml);
 
@@ -42,7 +40,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     ) || results[0];
 
     // Step 3: Load content page
-    const pageResp = await fetch(match.href, { headers: HEADERS, skipSizeCheck: true });
+    const pageResp = await fetch(match.href, { headers: HEADERS});
     const pageHtml = await pageResp.text();
     const $p = cheerio.load(pageHtml);
 
@@ -80,7 +78,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
       if (!targetEpUrl) return [];
 
       // Load episode page
-      const epResp = await fetch(targetEpUrl, { headers: HEADERS, skipSizeCheck: true });
+      const epResp = await fetch(targetEpUrl, { headers: HEADERS});
       const epHtml = await epResp.text();
       const $ep = cheerio.load(epHtml);
 
@@ -94,9 +92,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
 
       // Load iframe page to get download buttons
       const iframeResp = await fetch(fullIframeUrl, {
-        headers: { ...HEADERS, "Referer": BASE_URL },
-        skipSizeCheck: true
-      });
+        headers: { ...HEADERS, "Referer": BASE_URL }});
       const iframeHtml = await iframeResp.text();
       const $ifr = cheerio.load(iframeHtml);
 
@@ -111,9 +107,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
       for (const btn of btnLinks.slice(0, 5)) {
         try {
           const intermediateResp = await fetch(btn.href, {
-            headers: HEADERS,
-            skipSizeCheck: true
-          });
+            headers: HEADERS});
           const intermediateHtml = await intermediateResp.text();
           const $int = cheerio.load(intermediateHtml);
 
@@ -146,9 +140,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     const fullIframeUrl = iframeUrl.startsWith("http") ? iframeUrl : `https:${iframeUrl}`;
 
     const iframeResp = await fetch(fullIframeUrl, {
-      headers: { ...HEADERS, "Referer": BASE_URL },
-      skipSizeCheck: true
-    });
+      headers: { ...HEADERS, "Referer": BASE_URL }});
     const iframeHtml = await iframeResp.text();
     const $ifr = cheerio.load(iframeHtml);
 
@@ -162,9 +154,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     for (const btn of btnLinks.slice(0, 5)) {
       try {
         const intermediateResp = await fetch(btn.href, {
-          headers: HEADERS,
-          skipSizeCheck: true
-        });
+          headers: HEADERS});
         const intermediateHtml = await intermediateResp.text();
         const $int = cheerio.load(intermediateHtml);
 

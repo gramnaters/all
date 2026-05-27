@@ -3,6 +3,8 @@
 // Scrapes tokuzilla.net for tokusatsu/anime/series streams via embedded iframe + AES decryption
 
 const cheerio = require('cheerio-without-node-native');
+const CryptoJS = require('crypto-js');
+
 const BASE_URL = "https://tokuzilla.net";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 
@@ -20,29 +22,17 @@ function extractQuality(str) {
   return 'Unknown';
 }
 
-// AES CBC hex decryption using Web Crypto API
-async function decryptAES(hexStr, key, iv) {
+function decryptAES(hexStr, key, iv) {
   try {
-    const keyBytes = new TextEncoder().encode(key);
-    const ivBytes = new TextEncoder().encode(iv);
-
-    // Convert hex to bytes
-    const hexToBytes = (hex) => {
-      const bytes = new Uint8Array(hex.length / 2);
-      for (let i = 0; i < hex.length; i += 2) {
-        bytes[i / 2] = parseInt(hex.substr(i, 2), 16);
-      }
-      return bytes;
-    };
-
-    const encryptedBytes = hexToBytes(hexStr);
-    const cryptoKey = await crypto.subtle.importKey(
-      'raw', keyBytes, { name: 'AES-CBC' }, false, ['decrypt']
+    const ciphertext = CryptoJS.enc.Hex.parse(hexStr.trim());
+    const keyParsed = CryptoJS.enc.Utf8.parse(key);
+    const ivParsed = CryptoJS.enc.Utf8.parse(iv);
+    const decrypted = CryptoJS.AES.decrypt(
+      { ciphertext: ciphertext },
+      keyParsed,
+      { iv: ivParsed, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 }
     );
-    const decryptedBuffer = await crypto.subtle.decrypt(
-      { name: 'AES-CBC', iv: ivBytes }, cryptoKey, encryptedBytes
-    );
-    return new TextDecoder().decode(decryptedBuffer);
+    return decrypted.toString(CryptoJS.enc.Utf8);
   } catch (e) {
     return null;
   }
@@ -54,16 +44,14 @@ async function extractVidstackStreams(iframeSrc) {
     const baseUrl = new URL(iframeSrc).origin;
 
     const encoded = await (await fetch(`${baseUrl}/api/v1/video?id=${hash}`, {
-      headers: HEADERS,
-      skipSizeCheck: true
-    })).text();
+      headers: HEADERS})).text();
 
     const key = "kiemtienmua911ca";
     const ivList = ["1234567890oiuytr", "0123456789abcdef"];
 
     let decryptedText = null;
     for (const iv of ivList) {
-      decryptedText = await decryptAES(encoded.trim(), key, iv);
+      decryptedText = decryptAES(encoded.trim(), key, iv);
       if (decryptedText) break;
     }
 
@@ -101,13 +89,13 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   try {
     // 1. Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl)).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
     // 2. Search TokuZilla
     const searchUrl = `${BASE_URL}?s=${encodeURIComponent(title)}`;
-    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS})).text();
     const $ = cheerio.load(searchHtml);
 
     const firstResult = $('div.col-sm-4 h3 a').first();
@@ -119,7 +107,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
 
     // 3. If TV show, find the episode URL
     if (mediaType === 'tv' && season != null && episode != null) {
-      const showHtml = await (await fetch(href, { headers: HEADERS, skipSizeCheck: true })).text();
+      const showHtml = await (await fetch(href, { headers: HEADERS})).text();
       const $show = cheerio.load(showHtml);
 
       let episodeHref = null;
@@ -137,7 +125,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     }
 
     // 4. Load the page and get the iframe
-    const pageHtml = await (await fetch(href, { headers: HEADERS, skipSizeCheck: true })).text();
+    const pageHtml = await (await fetch(href, { headers: HEADERS})).text();
     const $page = cheerio.load(pageHtml);
     const iframeSrc = $page('div.player iframe').attr('src');
     if (!iframeSrc) return [];

@@ -1,8 +1,7 @@
+const cheerio = require('cheerio-without-node-native');
 // anime-dekho.js
 // AnimeDekho (https://animedekho.app) - Hindi dubbed anime, uses WP post-ID to find iframes
 // Searches site, gets body class postid, loops trdekho=0..10 to find iframes
-
-const cheerio = require('cheerio-without-node-native');
 
 const BASE_URL = "https://animedekho.app";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
@@ -15,13 +14,13 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   try {
     // 1. Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl)).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
     // 2. Search AnimeDekho
     const searchUrl = `${BASE_URL}/?s=${encodeURIComponent(title)}`;
-    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS})).text();
     const $ = cheerio.load(searchHtml);
 
     let itemUrl = null;
@@ -44,7 +43,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     if (!itemUrl) return [];
 
     // 3. Load anime page and find postid
-    const animePage = await (await fetch(itemUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const animePage = await (await fetch(itemUrl, { headers: HEADERS})).text();
     const $2 = cheerio.load(animePage);
     const bodyClass = $2("body").attr("class") || "";
 
@@ -71,7 +70,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     }
 
     // 5. Get postid for target page
-    const targetPage = await (await fetch(targetUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const targetPage = await (await fetch(targetUrl, { headers: HEADERS})).text();
     const $3 = cheerio.load(targetPage);
     const targetBodyClass = $3("body").attr("class") || "";
     const targetTermMatch = targetBodyClass.match(/(?:term|postid)-(\d+)/);
@@ -84,13 +83,12 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     for (let i = 0; i <= 10; i++) {
       try {
         const iframePageUrl = `${BASE_URL}/?trdekho=${i}&trid=${targetTerm}&trtype=${mediaType2}`;
-        const iframePageHtml = await (await fetch(iframePageUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+        const iframePageHtml = await (await fetch(iframePageUrl, { headers: HEADERS})).text();
         const $4 = cheerio.load(iframePageHtml);
         const iframeSrc = $4("iframe").attr("src");
 
         if (iframeSrc && iframeSrc.startsWith("http")) {
           streams.push({
-            name: `AnimeDekho [S${season || 1}E${epNum}]`,
             url: iframeSrc,
             quality: "Unknown",
             title: `AnimeDekho [S${season || 1}E${epNum}]`,

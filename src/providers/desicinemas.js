@@ -1,9 +1,8 @@
+const cheerio = require('cheerio-without-node-native');
 // desicinemas.js
 // Desicinemas - Hindi/Punjabi/Bollywood movie site (desicinemas.to)
 // Uses a Cloudflare Worker proxy for requests
 // Stream links: found from .MovieList .OptionBx items → iframe extraction
-
-const cheerio = require('cheerio-without-node-native');
 
 const BASE_URL = "https://desicinemas.to";
 const PROXY = "https://desicinemas.phisherdesicinema.workers.dev/";
@@ -30,13 +29,13 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   try {
     // 1. Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl)).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
     // 2. Search via proxy
     const searchUrl = `${PROXY}?url=${encodeURIComponent(`${BASE_URL}/?s=${encodeURIComponent(title)}`)}`;
-    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS})).text();
     const $ = cheerio.load(searchHtml);
 
     const results = [];
@@ -56,7 +55,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     const proxyPageUrl = `${PROXY}?url=${encodeURIComponent(pageUrl)}`;
 
     // 3. Load page via proxy to get option boxes
-    const pageHtml = await (await fetch(proxyPageUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const pageHtml = await (await fetch(proxyPageUrl, { headers: HEADERS})).text();
     const $page = cheerio.load(pageHtml);
 
     const streams = [];
@@ -69,14 +68,13 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         if (!link) continue;
 
         // Fetch the embed page
-        const embedHtml = await (await fetch(link, { headers: HEADERS, skipSizeCheck: true })).text();
+        const embedHtml = await (await fetch(link, { headers: HEADERS})).text();
         const $embed = cheerio.load(embedHtml);
         const iframeSrc = $embed("iframe").attr("src");
         if (!iframeSrc) continue;
 
         const name = $page("p.AAIco-dns", box).text().trim() || "Desicinemas";
         streams.push({
-          name: `Desicinemas [${name}]`,
           url: iframeSrc,
           quality: extractQuality(iframeSrc),
           title: `Desicinemas [${name}]`,

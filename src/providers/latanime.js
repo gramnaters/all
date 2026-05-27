@@ -1,7 +1,7 @@
+const cheerio = require('cheerio-without-node-native');
 // latanime.js
 // Latanime - Spanish-language anime provider via latanime.org
 
-const cheerio = require('cheerio-without-node-native');
 const BASE_URL = "https://latanime.org";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 
@@ -14,13 +14,13 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   try {
     // Step 1: Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl)).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
     // Step 2: Search Latanime
     const searchUrl = `${BASE_URL}/buscar?q=${encodeURIComponent(title)}`;
-    const searchResp = await fetch(searchUrl, { headers: HEADERS, skipSizeCheck: true });
+    const searchResp = await fetch(searchUrl, { headers: HEADERS});
     const searchHtml = await searchResp.text();
     const $ = cheerio.load(searchHtml);
 
@@ -40,7 +40,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     ) || results[0];
 
     // Step 3: Load the anime page to get episodes
-    const animeResp = await fetch(match.href, { headers: HEADERS, skipSizeCheck: true });
+    const animeResp = await fetch(match.href, { headers: HEADERS});
     const animeHtml = await animeResp.text();
     const $a = cheerio.load(animeHtml);
 
@@ -66,7 +66,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     if (!targetEpUrl) return [];
 
     // Step 4: Load episode page and get player links
-    const epPageResp = await fetch(targetEpUrl, { headers: HEADERS, skipSizeCheck: true });
+    const epPageResp = await fetch(targetEpUrl, { headers: HEADERS});
     const epPageHtml = await epPageResp.text();
     const $ep = cheerio.load(epPageHtml);
 
@@ -119,7 +119,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
 
       // Try fetching the player page to find stream
       try {
-        const pResp = await fetch(playerUrl, { headers: HEADERS, skipSizeCheck: true });
+        const pResp = await fetch(playerUrl, { headers: HEADERS});
         const pText = await pResp.text();
 
         const m3u8Match = pText.match(/https?:\/\/[^\s"']+\.m3u8[^\s"']*/i);

@@ -1,10 +1,9 @@
+const cheerio = require('cheerio-without-node-native');
 // fibwatch.js
 // FibWatch - Hindi/Bangla/South Indian multilingual movie & series site (fibwatch.top)
 // Search: /search?keyword={query}&page_id=1
 // Video IDs from input#video-id → /ajax/resolution_switcher.php?video_id={id}
 // Episodes via: /ajax/episodes.php?video_id={id}
-
-const cheerio = require('cheerio-without-node-native');
 
 const BASE_URL = "https://fibwatch.top";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
@@ -27,13 +26,13 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   try {
     // 1. Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl)).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
     // 2. Search
     const searchUrl = `${BASE_URL}/search?keyword=${encodeURIComponent(title)}&page_id=1`;
-    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS})).text();
     const $ = cheerio.load(searchHtml);
 
     const results = [];
@@ -53,7 +52,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     const pageUrl = match.url.startsWith("http") ? match.url : `${BASE_URL}${match.url}`;
 
     // 3. Load show page
-    const showHtml = await (await fetch(pageUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const showHtml = await (await fetch(pageUrl, { headers: HEADERS})).text();
     const $show = cheerio.load(showHtml);
 
     const videoId = $show("input#video-id").attr("value");
@@ -65,7 +64,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     if (isTV) {
       // Get episodes list
       const epDataUrl = `${BASE_URL}/ajax/episodes.php?video_id=${videoId}`;
-      const epData = await (await fetch(epDataUrl, { headers: HEADERS, skipSizeCheck: true })).json();
+      const epData = await (await fetch(epDataUrl, { headers: HEADERS})).json();
       const episodes = epData.episodes || [];
 
       if (!episodes.length) return [];
@@ -93,13 +92,13 @@ async function getStreams(tmdbId, mediaType, season, episode) {
       if (!targetEpUrl) return [];
 
       // Load episode page
-      const epHtml = await (await fetch(targetEpUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+      const epHtml = await (await fetch(targetEpUrl, { headers: HEADERS})).text();
       const $ep = cheerio.load(epHtml);
       const epVideoId = $ep("input#video-id").attr("value");
 
       if (epVideoId) {
         const resUrl = `${BASE_URL}/ajax/resolution_switcher.php?video_id=${epVideoId}`;
-        const resData = await (await fetch(resUrl, { headers: HEADERS, skipSizeCheck: true })).json();
+        const resData = await (await fetch(resUrl, { headers: HEADERS})).json();
         const allLinks = [...(resData.current || []), ...(resData.popup || [])];
         for (const item of allLinks) {
           const url = (item.url || "").trim();
@@ -107,7 +106,6 @@ async function getStreams(tmdbId, mediaType, season, episode) {
           // Direct media check
           if (url.match(/\.(mp4|mkv|m3u8)/i)) {
             streams.push({
-              name: `FibWatch [${item.res || "Stream"}]`,
               url,
               quality: extractQuality(item.res || url),
               title: `FibWatch [${item.res || "Stream"}]`,
@@ -116,12 +114,11 @@ async function getStreams(tmdbId, mediaType, season, episode) {
           } else {
             // Try to get download URL
             try {
-              const dlHtml = await (await fetch(url, { headers: HEADERS, skipSizeCheck: true })).text();
+              const dlHtml = await (await fetch(url, { headers: HEADERS})).text();
               const $dl = cheerio.load(dlHtml);
               const dlUrl = ($dl("a.hidden-button.buttonDownloadnew").attr("href") || "").replace(/.*url=/, "").trim();
               if (dlUrl && dlUrl.startsWith("http")) {
                 streams.push({
-                  name: `FibWatch [${item.res || "Stream"}]`,
                   url: dlUrl,
                   quality: extractQuality(item.res || dlUrl),
                   title: `FibWatch [${item.res || "Stream"}]`,
@@ -135,7 +132,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     } else {
       // Movie: use resolution switcher
       const resUrl = `${BASE_URL}/ajax/resolution_switcher.php?video_id=${videoId}`;
-      const resData = await (await fetch(resUrl, { headers: HEADERS, skipSizeCheck: true })).json();
+      const resData = await (await fetch(resUrl, { headers: HEADERS})).json();
       const allLinks = [...(resData.current || []), ...(resData.popup || [])];
 
       for (const item of allLinks) {
@@ -150,7 +147,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
           });
         } else {
           try {
-            const dlHtml = await (await fetch(url, { headers: HEADERS, skipSizeCheck: true })).text();
+            const dlHtml = await (await fetch(url, { headers: HEADERS})).text();
             const $dl = cheerio.load(dlHtml);
             const onclick = $dl("a.hidden-button.buttonDownloadnew").attr("href") || "";
             const dlUrl = onclick.replace(/.*url=/, "").trim();

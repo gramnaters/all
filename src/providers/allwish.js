@@ -1,7 +1,6 @@
 "use strict";
 
 const cheerio = require('cheerio-without-node-native');
-
 // ======================
 // Constants
 // ======================
@@ -23,10 +22,7 @@ const XML_HEADER = {
 // ======================
 
 function btoa(str) {
-  return Buffer.from(
-    str,
-    "binary"
-  ).toString("base64");
+  return btoaPolyfill(str);
 }
 
 async function fetchJson(
@@ -806,5 +802,7 @@ async function getStreams(
 // ======================
 // Export
 // ======================
+
+export { getStreams };
 
 module.exports = { getStreams };

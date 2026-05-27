@@ -1,10 +1,9 @@
+const cheerio = require('cheerio-without-node-native');
 // dudefilms.js
 // DudeFilms - Hindi/Bollywood/South Indian movie & series site (dudefilms.sarl)
 // Search: /page/1/?s={query}
 // Download links: a.maxbutton → redirect pages with more maxbutton links → final stream URLs
 // Uses Cinemeta for metadata enhancement
-
-const cheerio = require('cheerio-without-node-native');
 
 const BASE_URL = "https://dudefilms.sarl";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
@@ -27,13 +26,13 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   try {
     // 1. Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl)).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
     // 2. Search
     const searchUrl = `${BASE_URL}/page/1/?s=${encodeURIComponent(title)}`;
-    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS})).text();
     const $ = cheerio.load(searchHtml);
 
     const results = [];
@@ -53,7 +52,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     const pageUrl = match.url.startsWith("http") ? match.url : `${BASE_URL}${match.url}`;
 
     // 3. Load show page
-    const pageHtml = await (await fetch(pageUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const pageHtml = await (await fetch(pageUrl, { headers: HEADERS})).text();
     const $page = cheerio.load(pageHtml);
 
     const streams = [];
@@ -78,7 +77,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
             if (!seasonPageUrl) continue;
 
             try {
-              const seasonPageHtml = await (await fetch(seasonPageUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+              const seasonPageHtml = await (await fetch(seasonPageUrl, { headers: HEADERS})).text();
               const $seasonPage = cheerio.load(seasonPageHtml);
 
               const epButtons = $seasonPage("a.maxbutton-ep").toArray();
@@ -92,7 +91,6 @@ async function getStreams(tmdbId, mediaType, season, episode) {
 
                 // This URL is a final stream link
                 streams.push({
-                  name: `DudeFilms [S${season}E${episode}]`,
                   url: epUrl,
                   quality: extractQuality(epUrl),
                   title: `DudeFilms [S${season}E${episode}]`,
@@ -113,13 +111,12 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         try {
           const btnUrl = $page(btn).attr("href");
           if (!btnUrl) continue;
-          const btnHtml = await (await fetch(btnUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+          const btnHtml = await (await fetch(btnUrl, { headers: HEADERS})).text();
           const $btn = cheerio.load(btnHtml);
           $btn("a.maxbutton").each((i, a) => {
             const href = $btn(a).attr("href");
             if (href && href.startsWith("http")) {
               streams.push({
-                name: `DudeFilms`,
                 url: href,
                 quality: extractQuality(href),
                 title: `DudeFilms`,

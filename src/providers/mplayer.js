@@ -1,7 +1,7 @@
+const cheerio = require('cheerio-without-node-native');
 // mplayer.js
 // MPlayer - MX Player India streaming provider via api.mxplayer.in
 
-const cheerio = require('cheerio-without-node-native');
 const BASE_URL = "https://www.mxplayer.in";
 const WEB_API = "https://api.mxplayer.in/v1/web";
 const ENDPOINT_URL = "https://d3sgzbosmwirao.cloudfront.net/";
@@ -16,14 +16,14 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   try {
     // Step 1: Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl)).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
     // Step 2: Get UserID cookie from MX Player homepage
     let userId = "";
     try {
-      const homeResp = await fetch(BASE_URL, { headers: HEADERS, skipSizeCheck: true });
+      const homeResp = await fetch(BASE_URL, { headers: HEADERS});
       // Try to extract UserID from Set-Cookie
       const cookieHeader = homeResp.headers?.get("set-cookie") || "";
       const userIdMatch = cookieHeader.match(/UserID=([^;]+)/);
@@ -36,9 +36,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     const searchResp = await fetch(`${WEB_API}/search/resultv2?query=${encodeURIComponent(title)}${endParam}`, {
       method: "POST",
       headers: { ...HEADERS, "Content-Type": "application/json" },
-      body: "{}",
-      skipSizeCheck: true
-    });
+      body: "{}"});
     const searchText = await searchResp.text();
 
     let searchRoot;
@@ -107,7 +105,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
 
       const fullShareUrl = `${BASE_URL}${shareUrl}`;
       try {
-        const seasonPageResp = await fetch(fullShareUrl, { headers: HEADERS, skipSizeCheck: true });
+        const seasonPageResp = await fetch(fullShareUrl, { headers: HEADERS});
         const seasonHtml = await seasonPageResp.text();
         const $ = cheerio.load(seasonHtml);
 
@@ -125,7 +123,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
 
         // Get episodes for this season
         const episodesUrl = `${WEB_API}/detail/tab/tvshowepisodes?type=season&id=${targetSeason.id}&sortOrder=0${endParam}`;
-        const epsResp = await fetch(episodesUrl, { headers: HEADERS, skipSizeCheck: true });
+        const epsResp = await fetch(episodesUrl, { headers: HEADERS});
         const epsData = await epsResp.json();
 
         const epItems = epsData.items || [];

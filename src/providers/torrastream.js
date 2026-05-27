@@ -25,7 +25,7 @@ function extractQuality(str) {
 
 async function getTrackers() {
   try {
-    const text = await (await fetch(TRACKER_LIST_URL, { skipSizeCheck: true })).text();
+    const text = await (await fetch(TRACKER_LIST_URL)).text();
     return text.split('\n')
       .filter((l, i) => i % 2 === 0 && l.trim())
       .slice(0, 10);
@@ -52,7 +52,7 @@ async function invokeTorrentio(imdbId, season, episode) {
       ? `${TORRENTIO_API}/stream/series/${imdbId}:${season}:${episode}.json`
       : `${TORRENTIO_API}/stream/movie/${imdbId}.json`;
 
-    const res = await (await fetch(url, { headers: HEADERS, skipSizeCheck: true })).json();
+    const res = await (await fetch(url, { headers: HEADERS})).json();
     if (!res || !res.streams) return [];
 
     const trackers = await getTrackers();
@@ -63,7 +63,6 @@ async function invokeTorrentio(imdbId, season, episode) {
       const magnet = buildMagnet(stream.infoHash, trackers, stream.sources || []);
       const title = `Torrentio | ${quality} | Seeders: ${seeder}`;
       return {
-        name: title,
         url: magnet,
         quality: extractQuality(quality),
         title,
@@ -81,7 +80,7 @@ async function invokeThePirateBay(imdbId, season, episode) {
       ? `${THEPIRATEBAY_API}/stream/series/${imdbId}:${season}:${episode}.json`
       : `${THEPIRATEBAY_API}/stream/movie/${imdbId}.json`;
 
-    const res = await (await fetch(url, { headers: HEADERS, skipSizeCheck: true })).json();
+    const res = await (await fetch(url, { headers: HEADERS})).json();
     if (!res || !res.streams) return [];
 
     const trackers = await getTrackers();
@@ -89,7 +88,6 @@ async function invokeThePirateBay(imdbId, season, episode) {
       const magnet = buildMagnet(stream.infoHash, trackers, []);
       const quality = extractQuality(stream.title || '');
       return {
-        name: `ThePirateBay | ${stream.title || ''}`,
         url: magnet,
         quality,
         title: `ThePirateBay | ${stream.title || ''}`,
@@ -107,7 +105,7 @@ async function invokeTorrentsDB(imdbId, season, episode) {
       ? `${TORRENTSDB_API}/stream/series/${imdbId}:${season}:${episode}.json`
       : `${TORRENTSDB_API}/stream/movie/${imdbId}.json`;
 
-    const res = await (await fetch(url, { headers: HEADERS, skipSizeCheck: true })).json();
+    const res = await (await fetch(url, { headers: HEADERS})).json();
     if (!res || !res.streams) return [];
 
     return res.streams.map(stream => {
@@ -117,7 +115,6 @@ async function invokeTorrentsDB(imdbId, season, episode) {
       const seeder = title.match(/👤\s*(\d+)/)?.[1] || '0';
       const magnet = buildMagnet(stream.infoHash, [], stream.sources || []);
       return {
-        name: `TorrentsDB | ${quality} | Seeders: ${seeder}`,
         url: magnet,
         quality: extractQuality(quality),
         title: `TorrentsDB | ${quality} | Seeders: ${seeder}`,
@@ -132,7 +129,7 @@ async function invokeTorrentsDB(imdbId, season, episode) {
 async function getImdbId(tmdbId, mediaType) {
   try {
     const url = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}&append_to_response=external_ids`;
-    const res = await (await fetch(url, { skipSizeCheck: true })).json();
+    const res = await (await fetch(url)).json();
     return res.external_ids?.imdb_id || res.imdb_id || null;
   } catch (e) {
     return null;

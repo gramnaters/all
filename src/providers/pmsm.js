@@ -1,9 +1,9 @@
+const cheerio = require('cheerio-without-node-native');
 // pmsm.js
 // PMSM (PencurimovieSubMalay) provider — Malay subtitle movies/series
 // Uses zeta_player_ajax WordPress endpoint to get embed iframes
 // Domain is fetched from a GitHub JSON config file
 
-const cheerio = require('cheerio-without-node-native');
 const DOMAINS_URL = "https://raw.githubusercontent.com/phisher98/TVVVV/refs/heads/main/domains.json";
 const FALLBACK_URL = "https://ww105.pencurimoviesubmalay.guru";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
@@ -13,7 +13,7 @@ const HEADERS = {
 
 async function getBaseUrl() {
   try {
-    const domains = await (await fetch(DOMAINS_URL, { headers: HEADERS, skipSizeCheck: true })).json();
+    const domains = await (await fetch(DOMAINS_URL, { headers: HEADERS})).json();
     return domains.pencurimoviesubmalay || FALLBACK_URL;
   } catch (_) {
     return FALLBACK_URL;
@@ -26,13 +26,13 @@ async function getStreams(tmdbId, mediaType, season, episode) {
 
     // 1. Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { headers: HEADERS, skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl, { headers: HEADERS})).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
     // 2. Search PMSM
     const searchUrl = `${BASE_URL}/?s=${encodeURIComponent(title)}`;
-    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS})).text();
     const $s = cheerio.load(searchHtml);
 
     let pageUrl = null;
@@ -47,7 +47,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
 
     // 3. For TV series, navigate to episode URL
     if (mediaType === "tv" && season && episode) {
-      const showHtml = await (await fetch(pageUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+      const showHtml = await (await fetch(pageUrl, { headers: HEADERS})).text();
       const $show = cheerio.load(showHtml);
 
       let epUrl = null;
@@ -72,7 +72,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     }
 
     // 4. Extract player options and call zeta_player_ajax
-    const pageHtml = await (await fetch(pageUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const pageHtml = await (await fetch(pageUrl, { headers: HEADERS})).text();
     const $ = cheerio.load(pageHtml);
 
     const streams = [];
@@ -94,9 +94,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
             "Content-Type": "application/x-www-form-urlencoded",
             "X-Requested-With": "XMLHttpRequest"
           },
-          body: `action=zeta_player_ajax&post=${post}&nume=${nume}&type=${type}`,
-          skipSizeCheck: true
-        })).json();
+          body: `action=zeta_player_ajax&post=${post}&nume=${nume}&type=${type}`})).json();
 
         const embedUrl = ajaxResp?.embed_url;
         if (!embedUrl) continue;

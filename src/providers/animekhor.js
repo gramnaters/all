@@ -1,8 +1,7 @@
+const cheerio = require('cheerio-without-node-native');
 // animekhor.js
 // Animekhor (https://animekhor.org) - Anime/Donghua streaming in Chinese
 // Episode servers use base64-encoded HTML containing iframe src URLs
-
-const cheerio = require('cheerio-without-node-native');
 
 const BASE_URL = "https://animekhor.org";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
@@ -15,13 +14,13 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   try {
     // 1. Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl)).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
     // 2. Search Animekhor
     const searchUrl = `${BASE_URL}/page/1/?s=${encodeURIComponent(title)}`;
-    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS})).text();
     const $ = cheerio.load(searchHtml);
 
     let itemUrl = null;
@@ -34,7 +33,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     if (!itemUrl) return [];
 
     // 3. Load anime page to get episodes list
-    const animePage = await (await fetch(itemUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const animePage = await (await fetch(itemUrl, { headers: HEADERS})).text();
     const $2 = cheerio.load(animePage);
 
     const typeText = $2(".spe").text() || "";
@@ -49,7 +48,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
       const epPageUrl = $2(".eplister li > a").attr("href") || "";
       if (!epPageUrl) return [];
 
-      const epPageHtml = await (await fetch(epPageUrl.startsWith("http") ? epPageUrl : BASE_URL + epPageUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+      const epPageHtml = await (await fetch(epPageUrl.startsWith("http") ? epPageUrl : BASE_URL + epPageUrl, { headers: HEADERS})).text();
       const $3 = cheerio.load(epPageHtml);
 
       const targetEp = episode || 1;
@@ -78,7 +77,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     if (!episodeUrl) return [];
 
     // 4. Load episode page and extract servers
-    const epHtml = await (await fetch(episodeUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const epHtml = await (await fetch(episodeUrl, { headers: HEADERS})).text();
     const $4 = cheerio.load(epHtml);
 
     const streams = [];
@@ -96,7 +95,6 @@ async function getStreams(tmdbId, mediaType, season, episode) {
           if (url.startsWith("//")) url = "https:" + url;
           if (url.startsWith("http")) {
             streams.push({
-              name: "Animekhor",
               url,
               quality: "Unknown",
               title: "Animekhor",

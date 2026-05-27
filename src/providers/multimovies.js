@@ -1,7 +1,7 @@
+const cheerio = require('cheerio-without-node-native');
 // multimovies.js
 // MultiMovies - Hindi/Bollywood/Anime provider via multimovies.autos with WordPress player extraction
 
-const cheerio = require('cheerio-without-node-native');
 const DOMAINS_URL = "https://raw.githubusercontent.com/phisher98/TVVVV/refs/heads/main/domains.json";
 const FALLBACK_URL = "https://multimovies.autos";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
@@ -15,7 +15,7 @@ let cachedBaseUrl = null;
 async function getBaseUrl() {
   if (cachedBaseUrl) return cachedBaseUrl;
   try {
-    const resp = await fetch(DOMAINS_URL, { skipSizeCheck: true });
+    const resp = await fetch(DOMAINS_URL);
     const data = await resp.json();
     cachedBaseUrl = data.MultiMovies || FALLBACK_URL;
   } catch(e) {
@@ -30,15 +30,13 @@ async function getStreams(tmdbId, mediaType, season, episode) {
 
     // Step 1: Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl)).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
     // Step 2: Search MultiMovies
     const searchResp = await fetch(`${BASE_URL}/?s=${encodeURIComponent(title)}`, {
-      headers: HEADERS,
-      skipSizeCheck: true
-    });
+      headers: HEADERS});
     const searchHtml = await searchResp.text();
     const $ = cheerio.load(searchHtml);
 
@@ -58,7 +56,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     ) || results[0];
 
     // Step 3: Load content page
-    const pageResp = await fetch(match.href, { headers: HEADERS, skipSizeCheck: true });
+    const pageResp = await fetch(match.href, { headers: HEADERS});
     const pageHtml = await pageResp.text();
     const $p = cheerio.load(pageHtml);
 
@@ -101,7 +99,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
       if (!targetEp) return [];
 
       // Load episode page and get player options
-      const epResp = await fetch(targetEp.href, { headers: HEADERS, skipSizeCheck: true });
+      const epResp = await fetch(targetEp.href, { headers: HEADERS});
       const epHtml = await epResp.text();
       const $ep = cheerio.load(epHtml);
 
@@ -176,9 +174,7 @@ async function fetchEmbedUrl(baseUrl, post, nume, type, referer) {
         "X-Requested-With": "XMLHttpRequest",
         "Referer": baseUrl
       },
-      body: `action=doo_player_ajax&post=${post}&nume=${nume}&type=${type}`,
-      skipSizeCheck: true
-    });
+      body: `action=doo_player_ajax&post=${post}&nume=${nume}&type=${type}`});
     const data = await resp.json();
     const embedUrl = data.embed_url || "";
 
@@ -204,9 +200,7 @@ async function resolveEmbed(url, referer) {
   // Try to load the embed page and find stream
   try {
     const resp = await fetch(url, {
-      headers: { ...HEADERS, "Referer": referer },
-      skipSizeCheck: true
-    });
+      headers: { ...HEADERS, "Referer": referer }});
     const text = await resp.text();
 
     // Check for deaddrive.xyz style

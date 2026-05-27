@@ -1,8 +1,7 @@
+const cheerio = require('cheerio-without-node-native');
 // cinefreak.js
 // Cinefreak - Bangla/Hindi/Korean multilingual movie & series site (cinefreak.nl)
 // Search API: /search-api.php?q=...  Download links are base64-encoded redirect links
-
-const cheerio = require('cheerio-without-node-native');
 
 const BASE_URL = "https://cinefreak.nl";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
@@ -25,13 +24,13 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   try {
     // 1. Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { headers: HEADERS, skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl, { headers: HEADERS})).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
     // 2. Search Cinefreak
     const searchUrl = `${BASE_URL}/search-api.php?q=${encodeURIComponent(title)}&pg=1`;
-    const searchData = await (await fetch(searchUrl, { headers: HEADERS, skipSizeCheck: true })).json();
+    const searchData = await (await fetch(searchUrl, { headers: HEADERS})).json();
     const results = searchData.results || [];
     if (!results.length) return [];
 
@@ -45,7 +44,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     const pageUrl = match.l.startsWith("http") ? match.l : `${BASE_URL}/${match.l}/`;
 
     // 4. Load the page
-    const pageHtml = await (await fetch(pageUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const pageHtml = await (await fetch(pageUrl, { headers: HEADERS})).text();
     const $ = cheerio.load(pageHtml);
 
     const streams = [];
@@ -70,7 +69,6 @@ async function getStreams(tmdbId, mediaType, season, episode) {
           const text = $(a).text().trim();
           if (href) {
             streams.push({
-              name: `Cinefreak [${text}]`,
               url: href,
               quality: extractQuality(text),
               title: `Cinefreak [${text}]`,

@@ -1,9 +1,8 @@
+const cheerio = require('cheerio-without-node-native');
 // dorabash.js
 // DoraBash - Hindi Doraemon/cartoon/anime site (dorabash.in)
 // Episodes loaded via AJAX: /wp-admin/admin-ajax.php?action=get_episodes&anime_id={seasonId}&page=1&order=desc
 // Stream: span[data-embed-id] with base64-encoded "name:url" pairs
-
-const cheerio = require('cheerio-without-node-native');
 
 const BASE_URL = "https://dorabash.in";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
@@ -25,13 +24,13 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   try {
     // 1. Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl)).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
     // 2. Search: DoraBash is primarily Doraemon, so search for episodes
     const searchUrl = `${BASE_URL}/?s=${encodeURIComponent(title)}`;
-    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS})).text();
     const $ = cheerio.load(searchHtml);
 
     const results = [];
@@ -49,12 +48,12 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     if (!match) match = results[0];
 
     // Get the actual show URL from the search result page
-    const resultHtml = await (await fetch(match.url, { headers: HEADERS, skipSizeCheck: true })).text();
+    const resultHtml = await (await fetch(match.url, { headers: HEADERS})).text();
     const $result = cheerio.load(resultHtml);
     const showUrl = $result("div.anime-data h4 a").attr("href") || match.url;
 
     // 3. Load show page
-    const showHtml = await (await fetch(showUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const showHtml = await (await fetch(showUrl, { headers: HEADERS})).text();
     const $show = cheerio.load(showHtml);
 
     const typeText = $show("div.flex.flex-wrap.justify-center span:nth-child(2)").text() || "";
@@ -68,7 +67,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
       if (!seasonId) return [];
 
       const ajaxUrl = `${BASE_URL}/wp-admin/admin-ajax.php?action=get_episodes&anime_id=${seasonId}&page=1&order=desc`;
-      const epData = await (await fetch(ajaxUrl, { headers: HEADERS, skipSizeCheck: true })).json();
+      const epData = await (await fetch(ajaxUrl, { headers: HEADERS})).json();
       const episodes = (epData.data && epData.data.episodes) || [];
 
       // Find the episode matching the requested number
@@ -83,7 +82,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     }
 
     // 4. Load player page
-    const playerHtml = await (await fetch(targetUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const playerHtml = await (await fetch(targetUrl, { headers: HEADERS})).text();
     const $player = cheerio.load(playerHtml);
 
     const streams = [];
@@ -101,7 +100,6 @@ async function getStreams(tmdbId, mediaType, season, episode) {
           const type = container.hasClass("player-dub") ? "DUB" :
                        container.hasClass("player-sub") ? "SUB" : "";
           streams.push({
-            name: `DoraBash [${name}${type ? " " + type : ""}]`,
             url,
             quality: extractQuality(url),
             title: `DoraBash [${name}${type ? " " + type : ""}]`,

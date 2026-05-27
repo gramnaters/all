@@ -1,9 +1,9 @@
+const cheerio = require('cheerio-without-node-native');
 // piratexplay.js
 // Piratexplay provider — Anime/Cartoon/Movies (Hindi)
 // Searches title, finds episode URL, extracts iframes from page
 // Iframes may use url= param, also handles PiratexplayExtractor (#playerFrame)
 
-const cheerio = require('cheerio-without-node-native');
 const BASE_URL = "https://piratexplay.cc";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 const HEADERS = {
@@ -15,13 +15,13 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   try {
     // 1. Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { headers: HEADERS, skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl, { headers: HEADERS})).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
     // 2. Search Piratexplay
     const searchUrl = `${BASE_URL}/?s=${encodeURIComponent(title)}`;
-    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS})).text();
     const $s = cheerio.load(searchHtml);
 
     let pageUrl = null;
@@ -36,7 +36,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
 
     // 3. If TV series, navigate to correct season/episode
     if (mediaType === "tv" && season && episode) {
-      const showHtml = await (await fetch(pageUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+      const showHtml = await (await fetch(pageUrl, { headers: HEADERS})).text();
       const $show = cheerio.load(showHtml);
 
       // Find season links
@@ -48,7 +48,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
       let targetSeasonUrl = seasonLinks[parseInt(season) - 1] || seasonLinks[0];
       if (targetSeasonUrl) {
         const fullSeasonUrl = targetSeasonUrl.startsWith("http") ? targetSeasonUrl : BASE_URL + targetSeasonUrl;
-        const seasonHtml = await (await fetch(fullSeasonUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+        const seasonHtml = await (await fetch(fullSeasonUrl, { headers: HEADERS})).text();
         const $season = cheerio.load(seasonHtml);
 
         let epUrl = null;
@@ -67,7 +67,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     }
 
     // 4. Fetch the final page and extract iframes
-    const pageHtml = await (await fetch(pageUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const pageHtml = await (await fetch(pageUrl, { headers: HEADERS})).text();
     const $ = cheerio.load(pageHtml);
 
     const streams = [];
@@ -86,7 +86,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
       // Handle PiratexplayExtractor pattern — look for #playerFrame on the embed page
       try {
         if (src.includes("piratexplay.cc")) {
-          const innerHtml = await (await fetch(src, { headers: HEADERS, skipSizeCheck: true })).text();
+          const innerHtml = await (await fetch(src, { headers: HEADERS})).text();
           const $inner = cheerio.load(innerHtml);
           const innerSrc = $inner("#playerFrame").attr("src");
           if (innerSrc && innerSrc.startsWith("http")) {

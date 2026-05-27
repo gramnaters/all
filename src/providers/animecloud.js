@@ -1,8 +1,7 @@
+const cheerio = require('cheerio-without-node-native');
 // animecloud.js
 // AnimeCloud (https://fireani.me) - German anime site with REST JSON API
 // API: /api/anime/search?q=, /api/anime?slug=, /api/anime/episode?slug=&season=&episode=
-
-const cheerio = require('cheerio-without-node-native');
 
 const BASE_URL = "https://fireani.me";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
@@ -15,13 +14,13 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   try {
     // 1. Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl)).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
     // 2. Search AnimeCloud API
     const searchUrl = `${BASE_URL}/api/anime/search?q=${encodeURIComponent(title)}`;
-    const searchRes = await (await fetch(searchUrl, { headers: HEADERS, skipSizeCheck: true })).json();
+    const searchRes = await (await fetch(searchUrl, { headers: HEADERS})).json();
     const results = searchRes?.data || [];
     if (!results.length) return [];
 
@@ -31,7 +30,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
 
     // 4. Get anime detail to find season info
     const detailUrl = `${BASE_URL}/api/anime?slug=${slug}`;
-    const detailRes = await (await fetch(detailUrl, { headers: HEADERS, skipSizeCheck: true })).json();
+    const detailRes = await (await fetch(detailUrl, { headers: HEADERS})).json();
     const animeData = detailRes?.data;
     if (!animeData) return [];
 
@@ -47,7 +46,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
 
     // 6. Fetch episode links
     const epUrl = `${BASE_URL}/api/anime/episode?slug=${slug}&season=${encodeURIComponent(searchSeason)}&episode=${targetEp}`;
-    const epRes = await (await fetch(epUrl, { headers: HEADERS, skipSizeCheck: true })).json();
+    const epRes = await (await fetch(epUrl, { headers: HEADERS})).json();
     const episodeLinks = epRes?.data?.anime_episode_links || [];
 
     if (!episodeLinks.length) return [];
@@ -61,14 +60,13 @@ async function getStreams(tmdbId, mediaType, season, episode) {
 
       // Try to extract direct video from the link
       try {
-        const pageHtml = await (await fetch(href, { headers: HEADERS, skipSizeCheck: true })).text();
+        const pageHtml = await (await fetch(href, { headers: HEADERS})).text();
         const $ = cheerio.load(pageHtml);
 
         // Look for m3u8 or direct video
         const m3u8Match = pageHtml.match(/file:\s*["']([^"']+\.m3u8[^"']*)/i);
         if (m3u8Match) {
           streams.push({
-            name: `AnimeCloud [${lang}]`,
             url: m3u8Match[1],
             quality: "1080p",
             title: `AnimeCloud [${lang}]`,
@@ -82,7 +80,6 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         if (iframeSrc) {
           const iframeUrl = iframeSrc.startsWith("http") ? iframeSrc : BASE_URL + iframeSrc;
           streams.push({
-            name: `AnimeCloud [${lang}]`,
             url: iframeUrl,
             quality: "1080p",
             title: `AnimeCloud [${lang}]`,
@@ -92,7 +89,6 @@ async function getStreams(tmdbId, mediaType, season, episode) {
       } catch (_) {
         // If extraction fails, add raw link
         streams.push({
-          name: `AnimeCloud [${lang}]`,
           url: href,
           quality: "Unknown",
           title: `AnimeCloud [${lang}]`,

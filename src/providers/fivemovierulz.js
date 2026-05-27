@@ -1,9 +1,9 @@
+const cheerio = require('cheerio-without-node-native');
 // fivemovierulz.js
 // 5movierulz - South Indian/Bollywood movie site (5movierulz.gripe)
 // Search: /?s={query}
 // Stream links: p a elements containing "watch online" text
 
-const cheerio = require('cheerio-without-node-native');
 const BASE_URL = "https://5movierulz.gripe";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 const HEADERS = {
@@ -24,13 +24,13 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   try {
     // 1. Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl)).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
     // 2. Search
     const searchUrl = `${BASE_URL}/?s=${encodeURIComponent(title)}`;
-    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS})).text();
     const $ = cheerio.load(searchHtml);
 
     const results = [];
@@ -50,7 +50,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     const pageUrl = match.url.startsWith("http") ? match.url : `${BASE_URL}${match.url}`;
 
     // 3. Load movie page
-    const pageHtml = await (await fetch(pageUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const pageHtml = await (await fetch(pageUrl, { headers: HEADERS})).text();
     const $page = cheerio.load(pageHtml);
 
     // 4. Find "watch online" links in <p> tags

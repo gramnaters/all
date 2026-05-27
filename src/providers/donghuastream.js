@@ -1,9 +1,8 @@
+const cheerio = require('cheerio-without-node-native');
 // donghuastream.js
 // Donghuastream - Chinese Anime/Donghua site (donghuastream.org)
 // Search: /pagg/{page}/?s={query}
 // Episodes: /eplister li > a  then episode page has option[data-index] with base64 encoded HTML containing iframe
-
-const cheerio = require('cheerio-without-node-native');
 
 const BASE_URL = "https://donghuastream.org";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
@@ -25,13 +24,13 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   try {
     // 1. Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl)).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
     // 2. Search
     const searchUrl = `${BASE_URL}/pagg/1/?s=${encodeURIComponent(title)}`;
-    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS})).text();
     const $ = cheerio.load(searchHtml);
 
     const results = [];
@@ -50,7 +49,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     const showUrl = match.url.startsWith("http") ? match.url : `${BASE_URL}${match.url}`;
 
     // 3. Load show page
-    const showHtml = await (await fetch(showUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const showHtml = await (await fetch(showUrl, { headers: HEADERS})).text();
     const $show = cheerio.load(showHtml);
 
     const isMovie = $show(".spe").text().includes("Movie");
@@ -62,7 +61,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
       const epListUrl = $show(".eplister li > a").first().attr("href") || "";
       if (!epListUrl) return [];
 
-      const epListHtml = await (await fetch(epListUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+      const epListHtml = await (await fetch(epListUrl, { headers: HEADERS})).text();
       const $epList = cheerio.load(epListHtml);
 
       // Episodes in "div.episodelist > ul > li"
@@ -97,7 +96,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     }
 
     // 4. Load episode/movie page and extract streams
-    const epHtml = await (await fetch(targetUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const epHtml = await (await fetch(targetUrl, { headers: HEADERS})).text();
     const $ep = cheerio.load(epHtml);
 
     const streams = [];
@@ -120,10 +119,9 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         if (!iframeSrc.startsWith("http")) continue;
 
         // Handle vidmoly special case
-          if (iframeSrc.includes("vidmoly")) {
+        if (iframeSrc.includes("vidmoly")) {
           const cleaned = "http:" + iframeSrc.substring(iframeSrc.indexOf('="') + 2).replace('"', "");
           streams.push({
-            name: `Donghuastream [${label}]`,
             url: cleaned,
             quality: extractQuality(label),
             title: `Donghuastream [${label}]`,
@@ -131,7 +129,6 @@ async function getStreams(tmdbId, mediaType, season, episode) {
           });
         } else if (iframeSrc.endsWith(".mp4")) {
           streams.push({
-            name: `Donghuastream [${label}]`,
             url: iframeSrc,
             quality: extractQuality(label),
             title: `Donghuastream [${label}]`,
@@ -139,7 +136,6 @@ async function getStreams(tmdbId, mediaType, season, episode) {
           });
         } else {
           streams.push({
-            name: `Donghuastream [${label}]`,
             url: iframeSrc,
             quality: extractQuality(label),
             title: `Donghuastream [${label}]`,

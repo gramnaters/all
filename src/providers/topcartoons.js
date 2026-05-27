@@ -1,8 +1,8 @@
+const cheerio = require('cheerio-without-node-native');
 // topcartoons.js
 // Provider: Topcartoons (https://www.topcartoons.tv)
 // English cartoon TV shows - extracts stream from og:video:url meta tag
 
-const cheerio = require('cheerio-without-node-native');
 const BASE_URL = "https://www.topcartoons.tv";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 
@@ -24,13 +24,13 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   try {
     // 1. Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl)).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
     // 2. Search TopCartoons
     const searchUrl = `${BASE_URL}/?s=${encodeURIComponent(title)}`;
-    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS})).text();
     const $ = cheerio.load(searchHtml);
 
     const firstResult = $('article a').first();
@@ -39,7 +39,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     if (!href.startsWith('http')) href = BASE_URL + href;
 
     // 3. Load the show page and list episodes
-    const showHtml = await (await fetch(href, { headers: HEADERS, skipSizeCheck: true })).text();
+    const showHtml = await (await fetch(href, { headers: HEADERS})).text();
     const $show = cheerio.load(showHtml);
 
     // Episodes are listed as articles within articles
@@ -68,7 +68,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     if (!targetHref.startsWith('http')) targetHref = BASE_URL + targetHref;
 
     // 4. Load episode/movie page and extract og:video:url
-    const epHtml = await (await fetch(targetHref, { headers: HEADERS, skipSizeCheck: true })).text();
+    const epHtml = await (await fetch(targetHref, { headers: HEADERS})).text();
     const $ep = cheerio.load(epHtml);
 
     const videoUrl = $ep('meta[property="og:video:url"]').attr('content') || '';

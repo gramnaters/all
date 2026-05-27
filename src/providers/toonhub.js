@@ -1,8 +1,8 @@
+const cheerio = require('cheerio-without-node-native');
 // toonhub.js
 // Provider: ToonHub4u (https://toonhub4u.co)
 // Hindi/English dubbed anime and cartoons - extracts embed links from Google Drive / cloud hosts
 
-const cheerio = require('cheerio-without-node-native');
 const BASE_URL = "https://toonhub4u.co";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 
@@ -24,13 +24,13 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   try {
     // 1. Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl)).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
     // 2. Search ToonHub4u
     const searchUrl = `${BASE_URL}/?s=${encodeURIComponent(title)}`;
-    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS})).text();
     const $ = cheerio.load(searchHtml);
 
     const firstResult = $('li.post-item a').first();
@@ -39,7 +39,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     if (!href.startsWith('http')) href = BASE_URL + href;
 
     // 3. Load the content page
-    const pageHtml = await (await fetch(href, { headers: HEADERS, skipSizeCheck: true })).text();
+    const pageHtml = await (await fetch(href, { headers: HEADERS})).text();
     const $page = cheerio.load(pageHtml);
 
     const isTvSeries = $page('div.entry-content p strong').text().includes('TV Series');

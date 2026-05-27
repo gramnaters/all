@@ -1,9 +1,8 @@
+const cheerio = require('cheerio-without-node-native');
 // coflix.js
 // Coflix - French language movie & series site (coflix.wales)
 // Uses WP-JSON API: /wp-json/apiflix/v1  and suggest.php for search
 // Stream links: iFrame → li[onclick] with base64 encoded URLs
-
-const cheerio = require('cheerio-without-node-native');
 
 const BASE_URL = "https://coflix.wales";
 const COFLIX_API = `${BASE_URL}/wp-json/apiflix/v1`;
@@ -26,13 +25,13 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   try {
     // 1. Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { headers: HEADERS, skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl, { headers: HEADERS})).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
     // 2. Search via suggest.php
     const searchUrl = `${BASE_URL}/suggest.php?query=${encodeURIComponent(title)}`;
-    const searchResults = await (await fetch(searchUrl, { headers: HEADERS, skipSizeCheck: true })).json();
+    const searchResults = await (await fetch(searchUrl, { headers: HEADERS})).json();
     if (!Array.isArray(searchResults) || !searchResults.length) return [];
 
     const isTV = mediaType === "tv";
@@ -46,7 +45,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     const pageUrl = match.url.startsWith("http") ? match.url : `${BASE_URL}${match.url}`;
 
     // 4. Load page
-    const pageHtml = await (await fetch(pageUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const pageHtml = await (await fetch(pageUrl, { headers: HEADERS})).text();
     const $ = cheerio.load(pageHtml);
 
     let streamPageUrl = pageUrl;
@@ -61,7 +60,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
       if (!dataSeason) return [];
 
       const epResUrl = `${COFLIX_API}/series/${dataSeason}/${season}`;
-      const epData = await (await fetch(epResUrl, { headers: HEADERS, skipSizeCheck: true })).json();
+      const epData = await (await fetch(epResUrl, { headers: HEADERS})).json();
       const episodes = epData.episodes || [];
       const ep = episodes.find(e => parseInt(e.number) === episode || parseInt(e.season) === season && parseInt(e.number) === episode);
       if (!ep || !ep.links) return [];
@@ -69,13 +68,13 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     }
 
     // 5. Get iframe from stream page
-    const streamHtml = await (await fetch(streamPageUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const streamHtml = await (await fetch(streamPageUrl, { headers: HEADERS})).text();
     const $stream = cheerio.load(streamHtml);
     const iframeSrc = $stream("div.embed iframe").attr("src") || "";
     if (!iframeSrc) return [];
 
     // 6. Load iframe page and find li[onclick] with base64 URLs
-    const iframeHtml = await (await fetch(iframeSrc, { headers: { ...HEADERS, Referer: BASE_URL }, skipSizeCheck: true })).text();
+    const iframeHtml = await (await fetch(iframeSrc, { headers: { ...HEADERS, Referer: BASE_URL }})).text();
     const $iframe = cheerio.load(iframeHtml);
 
     const streams = [];
@@ -87,7 +86,6 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         const url = atob(b64Match[1]);
         if (url.startsWith("http")) {
           streams.push({
-            name: `Coflix [${$iframe(li).text().trim() || "Stream"}]`,
             url,
             quality: extractQuality(url),
             title: `Coflix [${$iframe(li).text().trim() || "Stream"}]`,

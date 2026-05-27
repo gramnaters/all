@@ -1,7 +1,7 @@
+const cheerio = require('cheerio-without-node-native');
 // movies4u.js
 // Movies4u - Hindi/Bollywood/Hollywood download links provider via movies4u.style
 
-const cheerio = require('cheerio-without-node-native');
 const DOMAINS_URL = "https://raw.githubusercontent.com/phisher98/TVVVV/refs/heads/main/domains.json";
 const FALLBACK_URL = "https://new2.movies4u.style";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
@@ -16,7 +16,7 @@ let cachedBaseUrl = null;
 async function getBaseUrl() {
   if (cachedBaseUrl) return cachedBaseUrl;
   try {
-    const resp = await fetch(DOMAINS_URL, { skipSizeCheck: true });
+    const resp = await fetch(DOMAINS_URL);
     const data = await resp.json();
     cachedBaseUrl = data.movies4u || FALLBACK_URL;
   } catch(e) {
@@ -31,15 +31,13 @@ async function getStreams(tmdbId, mediaType, season, episode) {
 
     // Step 1: Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl)).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
     // Step 2: Search Movies4u
     const searchResp = await fetch(`${BASE_URL}/?s=${encodeURIComponent(title)}`, {
-      headers: HEADERS,
-      skipSizeCheck: true
-    });
+      headers: HEADERS});
     const searchHtml = await searchResp.text();
     const $ = cheerio.load(searchHtml);
 
@@ -59,7 +57,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     ) || results[0];
 
     // Step 3: Load content page
-    const pageResp = await fetch(match.href, { headers: HEADERS, skipSizeCheck: true });
+    const pageResp = await fetch(match.href, { headers: HEADERS});
     const pageHtml = await pageResp.text();
     const $p = cheerio.load(pageHtml);
 
@@ -106,7 +104,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
       // For each quality link, try to navigate to episode list
       for (const { href, season: sNum } of seasonLinks.slice(0, 3)) {
         try {
-          const seasonResp = await fetch(href, { headers: HEADERS, skipSizeCheck: true });
+          const seasonResp = await fetch(href, { headers: HEADERS});
           const seasonHtml = await seasonResp.text();
           const $s = cheerio.load(seasonHtml);
 

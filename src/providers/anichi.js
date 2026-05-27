@@ -1,5 +1,39 @@
 "use strict";
 
+// Pure JS base64 (no Buffer dependency)
+const BASE64_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+function btoaPolyfill(str) {
+  if (str == null) return '';
+  let s = String(str);
+  let out = '';
+  let i = 0;
+  while (i < s.length) {
+    const c1 = s.charCodeAt(i++);
+    const c2 = s.charCodeAt(i++);
+    const c3 = s.charCodeAt(i++);
+    const enc1 = c1 >> 2;
+    const enc2 = ((c1 & 3) << 4) | (c2 >> 4);
+    let enc3 = ((c2 & 15) << 2) | (c3 >> 6);
+    let enc4 = c3 & 63;
+    if (isNaN(c2)) { enc3 = 64; enc4 = 64; }
+    else if (isNaN(c3)) { enc4 = 64; }
+    out += BASE64_CHARS.charAt(enc1) + BASE64_CHARS.charAt(enc2) + BASE64_CHARS.charAt(enc3) + BASE64_CHARS.charAt(enc4);
+  }
+  return out;
+}
+function atobPolyfill(str) {
+  if (!str) return '';
+  let s = String(str).replace(/=+$/, '');
+  let out = '';
+  let bc = 0, bs, buffer, idx = 0;
+  while ((buffer = BASE64_CHARS.indexOf(s.charAt(idx++))) !== -1 && ~buffer) {
+    bs = bc % 4 ? bs * 64 + buffer : buffer;
+    if (bc++ % 4) out += String.fromCharCode(255 & (bs >> ((-2 * bc) & 6)));
+  }
+  return out;
+}
+
+
 var __async = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
 
@@ -66,10 +100,7 @@ const HEADERS = {
 };
 
 function atob(str) {
-  return Buffer.from(
-    str,
-    "base64"
-  ).toString("binary");
+  return atobPolyfill(str);
 }
 
 function decryptHex(inputStr) {
@@ -398,6 +429,8 @@ function getStreams(
                   streams.push(stream);
                 }
               );
+
+              continue;
 
               continue;
             }

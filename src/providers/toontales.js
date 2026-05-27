@@ -1,8 +1,8 @@
+const cheerio = require('cheerio-without-node-native');
 // toontales.js
 // Provider: ToonTales (https://www.toontales.net)
 // Classic cartoons (Popeye, Tom & Jerry, etc.) - stream URL extracted from inline script
 
-const cheerio = require('cheerio-without-node-native');
 const BASE_URL = "https://www.toontales.net";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 
@@ -24,7 +24,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   try {
     // 1. Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl)).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
@@ -32,7 +32,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     let searchHref = null;
     for (let i = 1; i <= 3; i++) {
       const searchUrl = `${BASE_URL}/?s=${encodeURIComponent(title)}&paged=${i}`;
-      const searchHtml = await (await fetch(searchUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+      const searchHtml = await (await fetch(searchUrl, { headers: HEADERS})).text();
       const $ = cheerio.load(searchHtml);
 
       const firstResult = $('#movies-a > ul > li a').first();
@@ -46,7 +46,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     if (!searchHref.startsWith('http')) searchHref = BASE_URL + searchHref;
 
     // 3. Load the page and extract the stream URL from the inline script
-    const pageHtml = await (await fetch(searchHref, { headers: HEADERS, skipSizeCheck: true })).text();
+    const pageHtml = await (await fetch(searchHref, { headers: HEADERS})).text();
     const $ = cheerio.load(pageHtml);
 
     // Extract "file: "..." from script

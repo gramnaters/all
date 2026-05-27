@@ -1,10 +1,10 @@
+const cheerio = require('cheerio-without-node-native');
 // fourkHDhub.js
 // 4K HDHUB - High quality movie & series site (4khdhub.dad)
 // Search: /?s={query}  Results in div.card-grid a
 // Download links: div.download-item a[href] → redirect URLs → HubCloud extraction
 // TV episodes: div.episodes-list div.season-item → div.episode-download-item → a[href]
 
-const cheerio = require('cheerio-without-node-native');
 const BASE_URL = "https://4khdhub.dad";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 const HEADERS = {
@@ -24,7 +24,7 @@ function extractQuality(str) {
 async function resolveHubCloud(url) {
   try {
     // HubCloud: first get the #download link
-    const html1 = await (await fetch(url, { headers: HEADERS, skipSizeCheck: true })).text();
+    const html1 = await (await fetch(url, { headers: HEADERS})).text();
     const $1 = cheerio.load(html1);
     let href = $1("#download").attr("href") || "";
     if (!href) return null;
@@ -35,7 +35,7 @@ async function resolveHubCloud(url) {
     }
 
     // Load the hubcloud page
-    const html2 = await (await fetch(href, { headers: HEADERS, skipSizeCheck: true })).text();
+    const html2 = await (await fetch(href, { headers: HEADERS})).text();
     const $2 = cheerio.load(html2);
     const header = $2("div.card-header").text() || "";
     const quality = extractQuality(header);
@@ -63,7 +63,7 @@ async function resolveRedirect(rawUrl) {
   // Many links have ?id= param that needs to be followed as a redirect
   try {
     if (!rawUrl.includes("id=")) return rawUrl;
-    const resp = await fetch(rawUrl, { headers: HEADERS, skipSizeCheck: true, redirect: "follow" });
+    const resp = await fetch(rawUrl, { headers: HEADERS, redirect: "follow" });
     return resp.url || rawUrl;
   } catch (e) {
     return rawUrl;
@@ -74,13 +74,13 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   try {
     // 1. Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl)).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
     // 2. Search
     const searchUrl = `${BASE_URL}/?s=${encodeURIComponent(title)}`;
-    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS})).text();
     const $ = cheerio.load(searchHtml);
 
     const results = [];
@@ -100,7 +100,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     const pageUrl = match.url.startsWith("http") ? match.url : `${BASE_URL}${match.url}`;
 
     // 3. Load content page
-    const pageHtml = await (await fetch(pageUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const pageHtml = await (await fetch(pageUrl, { headers: HEADERS})).text();
     const $page = cheerio.load(pageHtml);
 
     const streams = [];

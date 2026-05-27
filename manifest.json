@@ -8,12 +8,21 @@
       "description": "AllWish Anime Streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv", "anime"],
+      "supportedTypes": [
+        "movie",
+        "tv",
+        "anime"
+      ],
       "filename": "src/providers/allwish.js",
       "enabled": true,
-      "formats": ["mp4", "mkv"],
+      "formats": [
+        "mp4",
+        "mkv"
+      ],
       "logo": "https://all-wish.me/assets/logo.png",
-      "contentLanguage": ["en"]
+      "contentLanguage": [
+        "en"
+      ]
     },
     {
       "id": "Anichi",
@@ -21,11 +30,20 @@
       "description": "Anime streaming provider",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/anichi.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["en", "ja"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "en",
+        "ja"
+      ]
     },
     {
       "id": "AnimeCloud",
@@ -33,11 +51,20 @@
       "description": "Anime streaming from AnimeCloud",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/animecloud.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["en", "ja"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "en",
+        "ja"
+      ]
     },
     {
       "id": "AnimeDekho",
@@ -45,11 +72,20 @@
       "description": "Anime streaming from AnimeDekho",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/anime-dekho.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["en", "ja"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "en",
+        "ja"
+      ]
     },
     {
       "id": "AnimeDubHindi",
@@ -57,11 +93,20 @@
       "description": "Hindi dubbed anime streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/animedubhindi.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["hi", "en"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "hi",
+        "en"
+      ]
     },
     {
       "id": "AnimeKhor",
@@ -69,11 +114,20 @@
       "description": "Anime streaming from AnimeKhor",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/animekhor.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["en", "ja"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "en",
+        "ja"
+      ]
     },
     {
       "id": "CineFreak",
@@ -81,11 +135,19 @@
       "description": "Movies and TV shows streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/cinefreak.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["en"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "en"
+      ]
     },
     {
       "id": "CoFlix",
@@ -93,11 +155,19 @@
       "description": "Movies and TV shows streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/coflix.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["en"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "en"
+      ]
     },
     {
       "id": "DesiCinemas",
@@ -105,11 +175,20 @@
       "description": "Indian movies and shows streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/desicinemas.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["hi", "en"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "hi",
+        "en"
+      ]
     },
     {
       "id": "DonghuaStream",
@@ -117,11 +196,20 @@
       "description": "Chinese anime streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/donghuastream.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["zh", "en"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "zh",
+        "en"
+      ]
     },
     {
       "id": "DoraBash",
@@ -129,11 +217,19 @@
       "description": "Drama and shows streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/dorabash.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["en"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "en"
+      ]
     },
     {
       "id": "DudeFilms",
@@ -141,11 +237,19 @@
       "description": "Movies streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/dudefilms.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["en"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "en"
+      ]
     },
     {
       "id": "FibWatch",
@@ -153,11 +257,19 @@
       "description": "Movies and TV streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/fibwatch.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["en"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "en"
+      ]
     },
     {
       "id": "FiveMovieRulz",
@@ -165,11 +277,20 @@
       "description": "South Indian and Bollywood movies streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/fivemovierulz.js",
       "enabled": true,
-      "formats": ["mp4", "mkv"],
-      "contentLanguage": ["hi", "en"]
+      "formats": [
+        "mp4",
+        "mkv"
+      ],
+      "contentLanguage": [
+        "hi",
+        "en"
+      ]
     },
     {
       "id": "4KHDHub",
@@ -177,11 +298,20 @@
       "description": "High quality movies and series streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/fourkHDhub.js",
       "enabled": true,
-      "formats": ["mp4", "mkv", "m3u8"],
-      "contentLanguage": ["en"]
+      "formats": [
+        "mp4",
+        "mkv",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "en"
+      ]
     },
     {
       "id": "GooJara",
@@ -189,11 +319,19 @@
       "description": "Movies and shows streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/goojara.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["en"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "en"
+      ]
     },
     {
       "id": "HiAnime",
@@ -201,11 +339,21 @@
       "description": "Anime streaming from HiAnime",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv", "anime"],
+      "supportedTypes": [
+        "movie",
+        "tv",
+        "anime"
+      ],
       "filename": "src/providers/hianime.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["en", "ja"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "en",
+        "ja"
+      ]
     },
     {
       "id": "HindMoviez",
@@ -213,11 +361,21 @@
       "description": "Hindi and English movies streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/hindmoviez.js",
       "enabled": true,
-      "formats": ["mp4", "mkv", "m3u8"],
-      "contentLanguage": ["hi", "en"]
+      "formats": [
+        "mp4",
+        "mkv",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "hi",
+        "en"
+      ]
     },
     {
       "id": "IDlix",
@@ -225,11 +383,20 @@
       "description": "Indonesian movies and series streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/idlix.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["id", "en"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "id",
+        "en"
+      ]
     },
     {
       "id": "IStreamFlare",
@@ -237,11 +404,19 @@
       "description": "Movies and TV streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/istreamflare.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["en"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "en"
+      ]
     },
     {
       "id": "KickAssAnime",
@@ -249,11 +424,21 @@
       "description": "Anime streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv", "anime"],
+      "supportedTypes": [
+        "movie",
+        "tv",
+        "anime"
+      ],
       "filename": "src/providers/kickassanime.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["en", "ja"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "en",
+        "ja"
+      ]
     },
     {
       "id": "KissKH",
@@ -261,11 +446,20 @@
       "description": "Korean drama and movie streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/kisskh.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["ko", "en"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "ko",
+        "en"
+      ]
     },
     {
       "id": "LatAnime",
@@ -273,11 +467,20 @@
       "description": "Latin American anime streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/latanime.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["es", "en"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "es",
+        "en"
+      ]
     },
     {
       "id": "LayarKaca",
@@ -285,11 +488,20 @@
       "description": "Indonesian movies and series streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/layarkaca.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["id", "en"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "id",
+        "en"
+      ]
     },
     {
       "id": "Masstamilan",
@@ -297,11 +509,20 @@
       "description": "Tamil and other Indian language music/movies",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/masstamilan.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["ta", "en"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "ta",
+        "en"
+      ]
     },
     {
       "id": "MegaKino",
@@ -309,11 +530,19 @@
       "description": "Movies and shows streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/megakino.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["en"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "en"
+      ]
     },
     {
       "id": "MovieRulzHD",
@@ -321,11 +550,20 @@
       "description": "HD movies streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/movierulzhd.js",
       "enabled": true,
-      "formats": ["mp4", "mkv"],
-      "contentLanguage": ["hi", "en"]
+      "formats": [
+        "mp4",
+        "mkv"
+      ],
+      "contentLanguage": [
+        "hi",
+        "en"
+      ]
     },
     {
       "id": "Movies4u",
@@ -333,11 +571,20 @@
       "description": "Multi-language movies streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie"],
+      "supportedTypes": [
+        "movie"
+      ],
       "filename": "src/providers/movies4u.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["en", "hi", "ta"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "en",
+        "hi",
+        "ta"
+      ]
     },
     {
       "id": "MoviesDrive",
@@ -345,12 +592,20 @@
       "description": "MoviesDrive streaming with multiple quality options and versions",
       "version": "1.1.1",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/moviesdrive.js",
       "enabled": true,
-      "formats": ["mp4", "mkv"],
+      "formats": [
+        "mp4",
+        "mkv"
+      ],
       "logo": "https://i.imgur.com/9bGkGMi.png",
-      "contentLanguage": ["en"]
+      "contentLanguage": [
+        "en"
+      ]
     },
     {
       "id": "MPlayer",
@@ -358,11 +613,19 @@
       "description": "Movies streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/mplayer.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["en"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "en"
+      ]
     },
     {
       "id": "MultiMovies",
@@ -370,11 +633,20 @@
       "description": "Multi-language movies streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/multimovies.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["en", "hi"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "en",
+        "hi"
+      ]
     },
     {
       "id": "NetCinez",
@@ -382,11 +654,19 @@
       "description": "Movies and series streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/netcinez.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["en"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "en"
+      ]
     },
     {
       "id": "OnePace",
@@ -394,11 +674,20 @@
       "description": "One Piece anime streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/onepace.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["en", "ja"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "en",
+        "ja"
+      ]
     },
     {
       "id": "PelisPlusHD",
@@ -406,11 +695,20 @@
       "description": "Spanish language movies and series streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/pelisplushd.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["es", "en"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "es",
+        "en"
+      ]
     },
     {
       "id": "PencuriMovie",
@@ -418,11 +716,20 @@
       "description": "Indonesian movies streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/pencurimovie.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["id", "en"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "id",
+        "en"
+      ]
     },
     {
       "id": "PinoyMoviePedia",
@@ -430,11 +737,20 @@
       "description": "Filipino movies and shows streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/pinoymoviepedia.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["fil", "en"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "fil",
+        "en"
+      ]
     },
     {
       "id": "PirateXPlay",
@@ -442,11 +758,19 @@
       "description": "Movies and TV streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/piratexplay.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["en"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "en"
+      ]
     },
     {
       "id": "PMSM",
@@ -454,11 +778,19 @@
       "description": "Movies streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/pmsm.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["en"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "en"
+      ]
     },
     {
       "id": "Ringz",
@@ -466,11 +798,19 @@
       "description": "Movies and shows streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/ringz.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["en"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "en"
+      ]
     },
     {
       "id": "Tokusatsu",
@@ -478,11 +818,20 @@
       "description": "Tokusatsu shows and movies streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/tokusatsu.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["en", "ja"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "en",
+        "ja"
+      ]
     },
     {
       "id": "Tokuzilla",
@@ -490,11 +839,20 @@
       "description": "Tokusatsu and kaiju content streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/tokuzilla.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["en", "ja"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "en",
+        "ja"
+      ]
     },
     {
       "id": "ToonHub",
@@ -502,11 +860,19 @@
       "description": "Cartoons and animated shows streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/toonhub.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["en"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "en"
+      ]
     },
     {
       "id": "ToonStream",
@@ -514,11 +880,19 @@
       "description": "Cartoons and animated content streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/toonstream.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["en"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "en"
+      ]
     },
     {
       "id": "ToonTales",
@@ -526,11 +900,19 @@
       "description": "Animated stories and cartoons streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/toontales.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["en"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "en"
+      ]
     },
     {
       "id": "TopCartoons",
@@ -538,11 +920,19 @@
       "description": "Popular cartoons streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/topcartoons.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["en"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "en"
+      ]
     },
     {
       "id": "TopStreamFilm",
@@ -550,11 +940,19 @@
       "description": "Movies streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/topstreamfilm.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["en"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "en"
+      ]
     },
     {
       "id": "TorraStream",
@@ -562,11 +960,19 @@
       "description": "Movies and shows streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/torrastream.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["en"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "en"
+      ]
     },
     {
       "id": "XDMovies",
@@ -574,11 +980,19 @@
       "description": "Movies and series streaming",
       "version": "1.0.0",
       "author": "Phisher",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "src/providers/xdmovies.js",
       "enabled": true,
-      "formats": ["mp4", "m3u8"],
-      "contentLanguage": ["en"]
+      "formats": [
+        "mp4",
+        "m3u8"
+      ],
+      "contentLanguage": [
+        "en"
+      ]
     }
   ]
 }

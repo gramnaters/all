@@ -1,8 +1,8 @@
+const cheerio = require('cheerio-without-node-native');
 // masstamilan.js
 // MassTamilan - Tamil/Telugu/Hindi music songs provider via masstamilan.dev
 // Note: This is primarily a music provider (audio streams), not video
 
-const cheerio = require('cheerio-without-node-native');
 const BASE_URL = "https://masstamilan.dev";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 const PROXY = "https://goodproxy.goodproxy.workers.dev/fetch?url=";
@@ -16,13 +16,13 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   try {
     // Step 1: Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl)).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
     // Step 2: Search MassTamilan
     const searchUrl = `${BASE_URL}/search?keyword=${encodeURIComponent(title)}`;
-    const searchResp = await fetch(searchUrl, { headers: HEADERS, skipSizeCheck: true });
+    const searchResp = await fetch(searchUrl, { headers: HEADERS});
     const searchHtml = await searchResp.text();
     const $ = cheerio.load(searchHtml);
 
@@ -47,7 +47,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     ) || results[0];
 
     // Step 3: Load the album/movie page
-    const pageResp = await fetch(match.href, { headers: HEADERS, skipSizeCheck: true });
+    const pageResp = await fetch(match.href, { headers: HEADERS});
     const pageHtml = await pageResp.text();
     const $p = cheerio.load(pageHtml);
 

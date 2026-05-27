@@ -8,16 +8,14 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   try {
     // Step 1: Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl)).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
     // Step 2: Search KissKH
     const searchUrl = `${BASE_URL}/api/DramaList/Search?q=${encodeURIComponent(title)}&type=0`;
     const searchResp = await fetch(searchUrl, {
-      headers: { "Referer": `${BASE_URL}/` },
-      skipSizeCheck: true
-    });
+      headers: { "Referer": `${BASE_URL}/` }});
     const searchData = await searchResp.json();
 
     if (!Array.isArray(searchData) || searchData.length === 0) return [];
@@ -33,9 +31,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     const safetitle = (match.title || "").replace(/[^a-zA-Z0-9]/g, "-");
     const detailUrl = `${BASE_URL}/api/DramaList/Drama/${match.id}?isq=false`;
     const detailResp = await fetch(detailUrl, {
-      headers: { "Referer": `${BASE_URL}/Drama/${safetitle}?id=${match.id}` },
-      skipSizeCheck: true
-    });
+      headers: { "Referer": `${BASE_URL}/Drama/${safetitle}?id=${match.id}` }});
     const detail = await detailResp.json();
 
     if (!detail || !detail.episodes) return [];
@@ -55,9 +51,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     // We try to get the source without the key first
     const sourceUrl = `${BASE_URL}/api/DramaList/Episode/${targetEp.id}.png?err=false&ts=&time=&kkey=`;
     const sourceResp = await fetch(sourceUrl, {
-      headers: { "Referer": `${BASE_URL}/Drama/${safetitle}/Episode-${targetEp.number}?id=${match.id}&ep=${targetEp.id}&page=0&pageSize=100` },
-      skipSizeCheck: true
-    });
+      headers: { "Referer": `${BASE_URL}/Drama/${safetitle}/Episode-${targetEp.number}?id=${match.id}&ep=${targetEp.id}&page=0&pageSize=100` }});
     const source = await sourceResp.json();
 
     const streams = [];
@@ -65,7 +59,6 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     // Video source
     if (source && source.Video && source.Video.includes(".m3u8")) {
       streams.push({
-        name: "KissKH",
         url: source.Video.startsWith("http") ? source.Video : `${BASE_URL}${source.Video}`,
         quality: "1080p",
         title: "KissKH",
@@ -78,7 +71,6 @@ async function getStreams(tmdbId, mediaType, season, episode) {
       const tp = source.ThirdParty;
       if (tp.includes(".m3u8") || tp.includes("mp4")) {
         streams.push({
-          name: "KissKH (ThirdParty)",
           url: tp.startsWith("http") ? tp : `${BASE_URL}${tp}`,
           quality: "720p",
           title: "KissKH (ThirdParty)",
@@ -90,7 +82,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     // Get subtitles
     const subUrl = `${BASE_URL}/api/Sub/${targetEp.id}?kkey=`;
     try {
-      const subResp = await fetch(subUrl, { skipSizeCheck: true });
+      const subResp = await fetch(subUrl);
       const subData = await subResp.json();
       if (Array.isArray(subData)) {
         const subs = subData

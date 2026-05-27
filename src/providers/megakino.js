@@ -1,7 +1,7 @@
+const cheerio = require('cheerio-without-node-native');
 // megakino.js
 // Megakino - German movies/series provider via megakino.team with Gxplayer embeds
 
-const cheerio = require('cheerio-without-node-native');
 const BASE_URL = "https://megakino.team";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 
@@ -14,7 +14,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   try {
     // Step 1: Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl)).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
@@ -25,9 +25,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         ...HEADERS,
         "Content-Type": "application/x-www-form-urlencoded"
       },
-      body: `do=search&subaction=search&story=${encodeURIComponent(title.replace(/ /g, "+"))}`,
-      skipSizeCheck: true
-    });
+      body: `do=search&subaction=search&story=${encodeURIComponent(title.replace(/ /g, "+"))}`});
     const searchHtml = await searchResp.text();
     const $ = cheerio.load(searchHtml);
 
@@ -46,7 +44,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     ) || results[0];
 
     // Step 3: Load content page
-    const pageResp = await fetch(match.href, { headers: HEADERS, skipSizeCheck: true });
+    const pageResp = await fetch(match.href, { headers: HEADERS});
     const pageHtml = await pageResp.text();
     const $p = cheerio.load(pageHtml);
 
@@ -89,9 +87,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         if (iframeUrl.includes("gxplayer") || iframeUrl.includes("watch.gxplayer")) {
           // Gxplayer: fetch the page and extract "var video = {...};"
           const playerResp = await fetch(iframeUrl, {
-            headers: { "Referer": BASE_URL, "User-Agent": HEADERS["User-Agent"] },
-            skipSizeCheck: true
-          });
+            headers: { "Referer": BASE_URL, "User-Agent": HEADERS["User-Agent"] }});
           const playerText = await playerResp.text();
 
           const videoVarMatch = playerText.match(/var video\s*=\s*(\{[^;]+\});/);
@@ -111,9 +107,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         } else {
           // Try to find m3u8 directly from the iframe page
           const playerResp = await fetch(iframeUrl, {
-            headers: { "Referer": BASE_URL, "User-Agent": HEADERS["User-Agent"] },
-            skipSizeCheck: true
-          });
+            headers: { "Referer": BASE_URL, "User-Agent": HEADERS["User-Agent"] }});
           const playerText = await playerResp.text();
           const m3u8Match = playerText.match(/(https?:\/\/[^\s"']+\.m3u8[^\s"']*)/i);
           if (m3u8Match) {

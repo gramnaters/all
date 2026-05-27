@@ -14,14 +14,14 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   try {
     // Step 1: Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl)).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
     // Step 2: Search IStreamFlare API for the content
     // The API uses encrypted responses; we search by title
     const searchUrl = `${BASE_URL}/android/searchContent/${encodeURIComponent(title)}/1`;
-    const searchResp = await fetch(searchUrl, { headers: HEADERS, skipSizeCheck: true });
+    const searchResp = await fetch(searchUrl, { headers: HEADERS});
     const searchText = await searchResp.text();
 
     let searchData;
@@ -58,7 +58,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     if (isMovie || contentType === "1") {
       // Movie: get play links
       const linksUrl = `${BASE_URL}/android/getMoviePlayLinks/${contentId}/0`;
-      const linksResp = await fetch(linksUrl, { headers: HEADERS, skipSizeCheck: true });
+      const linksResp = await fetch(linksUrl, { headers: HEADERS});
       const linksText = await linksResp.text();
 
       let links = [];
@@ -74,7 +74,6 @@ async function getStreams(tmdbId, mediaType, season, episode) {
       for (const link of links) {
         if (!link.url) continue;
         streams.push({
-          name: `IStreamFlare ${link.name || ""}`.trim(),
           url: link.url,
           quality: mapQuality(link.quality || ""),
           title: `IStreamFlare ${link.name || ""}`.trim(),
@@ -84,7 +83,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     } else {
       // TV Series: get seasons -> episodes -> stream URL
       const seasonsUrl = `${BASE_URL}/android/getSeasons/${contentId}`;
-      const seasonsResp = await fetch(seasonsUrl, { headers: HEADERS, skipSizeCheck: true });
+      const seasonsResp = await fetch(seasonsUrl, { headers: HEADERS});
       const seasonsText = await seasonsResp.text();
 
       let seasons = [];
@@ -101,7 +100,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         if (season && sNum !== parseInt(season)) continue;
 
         const epsUrl = `${BASE_URL}/android/getEpisodes/${s.id}/0`;
-        const epsResp = await fetch(epsUrl, { headers: HEADERS, skipSizeCheck: true });
+        const epsResp = await fetch(epsUrl, { headers: HEADERS});
         const epsText = await epsResp.text();
 
         let episodes = [];
@@ -117,7 +116,6 @@ async function getStreams(tmdbId, mediaType, season, episode) {
           if (!ep.url) continue;
 
           streams.push({
-            name: `IStreamFlare ${ep.Episoade_Name || ep.episoadeName || `E${epNum}`}`.trim(),
             url: ep.url,
             quality: "Unknown",
             title: `IStreamFlare ${ep.Episoade_Name || ep.episoadeName || `E${epNum}`}`.trim(),
@@ -134,8 +132,6 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   }
 }
 
-module.exports = { getStreams };
-
 function mapQuality(q) {
   const u = (q || "").toLowerCase();
   if (u.includes("4k") || u.includes("2160")) return "4K";
@@ -145,3 +141,5 @@ function mapQuality(q) {
   if (u.includes("360")) return "360p";
   return "Unknown";
 }
+
+module.exports = { getStreams };

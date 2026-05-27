@@ -1,7 +1,7 @@
+const cheerio = require('cheerio-without-node-native');
 // movierulzhd.js
 // Movierulzhd - Hindi movies/series provider with WordPress admin-ajax embed extraction
 
-const cheerio = require('cheerio-without-node-native');
 const DOMAINS_URL = "https://raw.githubusercontent.com/phisher98/TVVVV/refs/heads/main/domains.json";
 const FALLBACK_URL = "https://123moviesfree9.cloud";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
@@ -15,7 +15,7 @@ let cachedBaseUrl = null;
 async function getBaseUrl() {
   if (cachedBaseUrl) return cachedBaseUrl;
   try {
-    const resp = await fetch(DOMAINS_URL, { skipSizeCheck: true });
+    const resp = await fetch(DOMAINS_URL);
     const data = await resp.json();
     cachedBaseUrl = data.movierulzhd || FALLBACK_URL;
   } catch(e) {
@@ -30,15 +30,13 @@ async function getStreams(tmdbId, mediaType, season, episode) {
 
     // Step 1: Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl)).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
     // Step 2: Search Movierulzhd
     const searchResp = await fetch(`${BASE_URL}/search/${encodeURIComponent(title.replace(/ /g, "-"))}`, {
-      headers: HEADERS,
-      skipSizeCheck: true
-    });
+      headers: HEADERS});
     const searchHtml = await searchResp.text();
     const $ = cheerio.load(searchHtml);
 
@@ -69,7 +67,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     }
 
     // Step 3: Load content page
-    const pageResp = await fetch(contentUrl, { headers: HEADERS, skipSizeCheck: true });
+    const pageResp = await fetch(contentUrl, { headers: HEADERS});
     const pageHtml = await pageResp.text();
     const $p = cheerio.load(pageHtml);
     const directUrl = new URL(pageResp.url || contentUrl).origin;
@@ -96,7 +94,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         ) || epLinks[0];
 
         // Load episode page
-        const epResp = await fetch(targetEp.href, { headers: HEADERS, skipSizeCheck: true });
+        const epResp = await fetch(targetEp.href, { headers: HEADERS});
         const epHtml = await epResp.text();
         const $ep = cheerio.load(epHtml);
         const epDirectUrl = new URL(epResp.url || targetEp.href).origin;
@@ -166,9 +164,7 @@ async function fetchEmbedUrl(baseUrl, post, nume, type) {
         "X-Requested-With": "XMLHttpRequest",
         "Referer": baseUrl
       },
-      body: `action=doo_player_ajax&post=${post}&nume=${nume}&type=${type}`,
-      skipSizeCheck: true
-    });
+      body: `action=doo_player_ajax&post=${post}&nume=${nume}&type=${type}`});
     const data = await resp.json();
     const embedUrl = data.embed_url || "";
 

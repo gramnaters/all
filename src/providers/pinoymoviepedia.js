@@ -1,8 +1,8 @@
+const cheerio = require('cheerio-without-node-native');
 // pinoymoviepedia.js
 // Pinoymoviepedia provider — Filipino movies
 // Searches by title, finds page, extracts iframes from div.pframe
 
-const cheerio = require('cheerio-without-node-native');
 const BASE_URL = "https://pinoymoviepedia.ru";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 const HEADERS = {
@@ -14,13 +14,13 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   try {
     // 1. Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { headers: HEADERS, skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl, { headers: HEADERS})).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
     // 2. Search Pinoymoviepedia
     const searchUrl = `${BASE_URL}/search/${encodeURIComponent(title)}`;
-    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS})).text();
     const $s = cheerio.load(searchHtml);
 
     // First result from search
@@ -35,7 +35,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     if (!pageUrl) return [];
 
     // 3. Fetch the page and extract iframes from div.pframe
-    const pageHtml = await (await fetch(pageUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const pageHtml = await (await fetch(pageUrl, { headers: HEADERS})).text();
     const $ = cheerio.load(pageHtml);
 
     const streams = [];

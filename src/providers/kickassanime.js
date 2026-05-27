@@ -15,7 +15,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   try {
     // Step 1: Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl)).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
@@ -24,9 +24,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     const searchResp = await fetch(`${BASE_URL}/api/fsearch`, {
       method: "POST",
       headers: HEADERS,
-      body: searchBody,
-      skipSizeCheck: true
-    });
+      body: searchBody});
     const searchData = await searchResp.json();
 
     if (!searchData || !searchData.result || searchData.result.length === 0) return [];
@@ -44,7 +42,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     // Step 3: Get show details & episodes
     const showName = showSlug.startsWith("/") ? showSlug : `/${showSlug}`;
     const episodesUrl = `${BASE_URL}/api/show${showName}/episodes?ep=1&lang=ja-JP`;
-    const epsResp = await fetch(episodesUrl, { headers: HEADERS, skipSizeCheck: true });
+    const epsResp = await fetch(episodesUrl, { headers: HEADERS});
     const epsData = await epsResp.json();
 
     const episodes = epsData && epsData.result ? epsData.result : [];
@@ -69,7 +67,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     const episodeUrl = `${BASE_URL}/api/show${showName}/episode/ep-${epNum}-${epSlug}`;
 
     // Step 4: Get servers for this episode
-    const serversResp = await fetch(episodeUrl, { headers: HEADERS, skipSizeCheck: true });
+    const serversResp = await fetch(episodeUrl, { headers: HEADERS});
     const serversData = await serversResp.json();
 
     if (!serversData || !serversData.servers) return [];
@@ -87,7 +85,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
             "User-Agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36"
           };
 
-          const pageResp = await fetch(server.src, { headers: serverHeaders, skipSizeCheck: true });
+          const pageResp = await fetch(server.src, { headers: serverHeaders});
           const pageText = await pageResp.text();
 
           // Try to find m3u8 directly
@@ -95,7 +93,6 @@ async function getStreams(tmdbId, mediaType, season, episode) {
           if (m3u8Match) {
             const m3u8Url = m3u8Match[0].startsWith("//") ? "https:" + m3u8Match[0] : m3u8Match[0];
             streams.push({
-              name: `KickassAnime ${server.name}`,
               url: m3u8Url,
               quality: "1080p",
               title: `KickassAnime ${server.name}`,
@@ -130,7 +127,6 @@ async function getStreams(tmdbId, mediaType, season, episode) {
                 }
               }
               streams.push({
-                name: `KickassAnime ${server.name}`,
                 url: videoUrl,
                 quality: "1080p",
                 title: `KickassAnime ${server.name}`,

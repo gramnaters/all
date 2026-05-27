@@ -1,8 +1,7 @@
+const cheerio = require('cheerio-without-node-native');
 // animedubhindi.js
 // AnimeDubHindi (https://www.animedubhindi.me) - Hindi dubbed anime
 // Downloads via HubCloud/GDFlix links, episodes parsed from series page
-
-const cheerio = require('cheerio-without-node-native');
 
 const BASE_URL = "https://www.animedubhindi.me";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
@@ -15,13 +14,13 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   try {
     // 1. Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl)).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
     // 2. Search AnimeDubHindi
     const searchUrl = `${BASE_URL}/?s=${encodeURIComponent(title)}`;
-    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS})).text();
     const $ = cheerio.load(searchHtml);
 
     let itemUrl = null;
@@ -34,7 +33,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     if (!itemUrl) return [];
 
     // 3. Load anime detail page
-    const itemHtml = await (await fetch(itemUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const itemHtml = await (await fetch(itemUrl, { headers: HEADERS})).text();
     const $2 = cheerio.load(itemHtml);
 
     // Get the series/episode index iframe href
@@ -46,7 +45,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
 
     if (isMovie) {
       // Movies - direct download links
-      const iframeHtml = await (await fetch(iframeLinkHref, { headers: HEADERS, skipSizeCheck: true })).text();
+      const iframeHtml = await (await fetch(iframeLinkHref, { headers: HEADERS})).text();
       const $3 = cheerio.load(iframeHtml);
       const streams = [];
 
@@ -57,7 +56,6 @@ async function getStreams(tmdbId, mediaType, season, episode) {
           const href = $3(a).attr("href");
           if (href && (href.includes("hubcloud") || href.includes("gdflix"))) {
             streams.push({
-              name: `AnimeDubHindi [${quality}]`,
               url: href,
               quality: quality.includes("1080") ? "1080p" : quality.includes("720") ? "720p" : quality.includes("480") ? "480p" : "Unknown",
               title: `AnimeDubHindi [${quality}]`,
@@ -71,7 +69,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     } else {
       // Series - find episode by number
       const targetEp = episode || 1;
-      const iframeHtml = await (await fetch(iframeLinkHref, { headers: HEADERS, skipSizeCheck: true })).text();
+      const iframeHtml = await (await fetch(iframeLinkHref, { headers: HEADERS})).text();
       const $3 = cheerio.load(iframeHtml);
       const streams = [];
 
@@ -84,7 +82,6 @@ async function getStreams(tmdbId, mediaType, season, episode) {
             const href = $3(a).attr("href");
             if (href && (href.includes("hubcloud") || href.includes("gdflix"))) {
               streams.push({
-                name: `AnimeDubHindi [E${targetEp}]`,
                 url: href,
                 quality: "Unknown",
                 title: `AnimeDubHindi [E${targetEp}]`,

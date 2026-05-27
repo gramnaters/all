@@ -1,8 +1,8 @@
+const cheerio = require('cheerio-without-node-native');
 // topstreamfilm.js
 // Provider: TopStreamFilm (https://www.topstreamfilm.live)
 // German streaming site for movies and TV series
 
-const cheerio = require('cheerio-without-node-native');
 const BASE_URL = "https://www.topstreamfilm.live";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 
@@ -32,13 +32,13 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   try {
     // 1. Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl)).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
     // 2. Search TopStreamFilm
     const searchUrl = `${BASE_URL}/?story=${encodeURIComponent(title)}&do=search&subaction=search`;
-    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS})).text();
     const $ = cheerio.load(searchHtml);
 
     const firstResult = $('article h3').first().closest('article');
@@ -47,7 +47,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     if (!href.startsWith('http')) href = BASE_URL + href;
 
     // 3. Load the content page
-    const pageHtml = await (await fetch(href, { headers: HEADERS, skipSizeCheck: true })).text();
+    const pageHtml = await (await fetch(href, { headers: HEADERS})).text();
     const $page = cheerio.load(pageHtml);
 
     const isSeries = $page('div.tt_season').text().trim() !== '';
@@ -80,7 +80,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
       if (streams.length === 0) {
         const iframeSrc = $page('div.TPlayer iframe').attr('src') || '';
         if (iframeSrc) {
-          const iframeHtml = await (await fetch(iframeSrc.startsWith('http') ? iframeSrc : BASE_URL + iframeSrc, { headers: HEADERS, skipSizeCheck: true })).text();
+          const iframeHtml = await (await fetch(iframeSrc.startsWith('http') ? iframeSrc : BASE_URL + iframeSrc, { headers: HEADERS})).text();
           const $iframe = cheerio.load(iframeHtml);
           $iframe('ul li').each((_, li) => {
             const dataLink = $iframe(li).attr('data-link') || '';
@@ -102,7 +102,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
       if (iframeSrc) {
         try {
           const iframeUrl = iframeSrc.startsWith('http') ? iframeSrc : BASE_URL + iframeSrc;
-          const iframeHtml = await (await fetch(iframeUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+          const iframeHtml = await (await fetch(iframeUrl, { headers: HEADERS})).text();
           const $iframe = cheerio.load(iframeHtml);
           $iframe('ul li').each((_, li) => {
             const dataLink = $iframe(li).attr('data-link') || '';

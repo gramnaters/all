@@ -1,8 +1,8 @@
+const cheerio = require('cheerio-without-node-native');
 // onepace.js
 // OnePace provider — scrapes https://onepace.co for One Pace anime arcs (sub & dub)
 // Searches by arc name, then iterates over up to 8 iframe slots per episode
 
-const cheerio = require('cheerio-without-node-native');
 const BASE_URL = "https://onepace.co";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 const HEADERS = {
@@ -14,13 +14,13 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   try {
     // 1. Get TMDB info (title)
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { headers: HEADERS, skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl, { headers: HEADERS})).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
     // 2. Determine if searching sub or dub series
     const seriesUrl = `${BASE_URL}/series/one-pace-english-sub/`;
-    const doc = cheerio.load(await (await fetch(seriesUrl, { headers: HEADERS, skipSizeCheck: true })).text());
+    const doc = cheerio.load(await (await fetch(seriesUrl, { headers: HEADERS})).text());
 
     // 3. Find the arc matching the current season
     const streams = [];
@@ -66,7 +66,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     // 4. For each episode URL, extract term id from body class then iterate iframe slots
     for (const epUrl of episodeLinks) {
       const fullUrl = epUrl.startsWith("http") ? epUrl : BASE_URL + epUrl;
-      const epHtml = await (await fetch(fullUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+      const epHtml = await (await fetch(fullUrl, { headers: HEADERS})).text();
       const epDoc = cheerio.load(epHtml);
 
       // Extract post/term id from body class
@@ -79,7 +79,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
       for (let i = 0; i <= 7; i++) {
         try {
           const iframeUrl = `${BASE_URL}/?trdekho=${i}&trid=${term}&trtype=2`;
-          const iframeHtml = await (await fetch(iframeUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+          const iframeHtml = await (await fetch(iframeUrl, { headers: HEADERS})).text();
           const iframeDoc = cheerio.load(iframeHtml);
           const src = iframeDoc("iframe").attr("src");
           if (src && src.startsWith("http")) {

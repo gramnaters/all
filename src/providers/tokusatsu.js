@@ -3,6 +3,8 @@
 // Scrapes toku555.com for tokusatsu content and extracts HLS via AES decryption
 
 const cheerio = require('cheerio-without-node-native');
+const CryptoJS = require('crypto-js');
+
 const BASE_URL = "https://toku555.com";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 
@@ -20,27 +22,17 @@ function extractQuality(str) {
   return 'Unknown';
 }
 
-async function decryptAES(hexStr, key, iv) {
+function decryptAES(hexStr, key, iv) {
   try {
-    const keyBytes = new TextEncoder().encode(key);
-    const ivBytes = new TextEncoder().encode(iv);
-
-    const hexToBytes = (hex) => {
-      const bytes = new Uint8Array(hex.length / 2);
-      for (let i = 0; i < hex.length; i += 2) {
-        bytes[i / 2] = parseInt(hex.substr(i, 2), 16);
-      }
-      return bytes;
-    };
-
-    const encryptedBytes = hexToBytes(hexStr);
-    const cryptoKey = await crypto.subtle.importKey(
-      'raw', keyBytes, { name: 'AES-CBC' }, false, ['decrypt']
+    const ciphertext = CryptoJS.enc.Hex.parse(hexStr.trim());
+    const keyParsed = CryptoJS.enc.Utf8.parse(key);
+    const ivParsed = CryptoJS.enc.Utf8.parse(iv);
+    const decrypted = CryptoJS.AES.decrypt(
+      { ciphertext: ciphertext },
+      keyParsed,
+      { iv: ivParsed, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 }
     );
-    const decryptedBuffer = await crypto.subtle.decrypt(
-      { name: 'AES-CBC', iv: ivBytes }, cryptoKey, encryptedBytes
-    );
-    return new TextDecoder().decode(decryptedBuffer);
+    return decrypted.toString(CryptoJS.enc.Utf8);
   } catch (e) {
     return null;
   }
@@ -52,16 +44,14 @@ async function extractVidstackStreams(iframeSrc) {
     const baseUrl = new URL(iframeSrc).origin;
 
     const encoded = await (await fetch(`${baseUrl}/api/v1/video?id=${hash}`, {
-      headers: HEADERS,
-      skipSizeCheck: true
-    })).text();
+      headers: HEADERS})).text();
 
     const key = "kiemtienmua911ca";
     const ivList = ["1234567890oiuytr", "0123456789abcdef"];
 
     let decryptedText = null;
     for (const iv of ivList) {
-      decryptedText = await decryptAES(encoded.trim(), key, iv);
+      decryptedText = decryptAES(encoded.trim(), key, iv);
       if (decryptedText) break;
     }
 
@@ -99,13 +89,13 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   try {
     // 1. Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl)).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
     // 2. Search on toku555.com
     const searchUrl = `${BASE_URL}/search/${encodeURIComponent(title)}/`;
-    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS})).text();
     const $ = cheerio.load(searchHtml);
 
     const firstResult = $('div.film-poster, .item, .series-item').first();
@@ -114,7 +104,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     if (!href.startsWith('http')) href = BASE_URL + href;
 
     // 3. Load show page
-    const showHtml = await (await fetch(href, { headers: HEADERS, skipSizeCheck: true })).text();
+    const showHtml = await (await fetch(href, { headers: HEADERS})).text();
     const $show = cheerio.load(showHtml);
 
     let iframeSrc = '';
@@ -131,7 +121,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
       const targetEp = epLinks[parseInt(episode) - 1] || epLinks[0];
       if (targetEp) {
         const epUrl = targetEp.startsWith('http') ? targetEp : BASE_URL + targetEp;
-        const epHtml = await (await fetch(epUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+        const epHtml = await (await fetch(epUrl, { headers: HEADERS})).text();
         const $ep = cheerio.load(epHtml);
         iframeSrc = $ep('div.player iframe').attr('src') || '';
       }

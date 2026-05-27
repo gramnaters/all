@@ -1,8 +1,8 @@
+const cheerio = require('cheerio-without-node-native');
 // toonstream.js
 // Provider: Toonstream (https://toonstream.vip)
 // Hindi dubbed cartoons and anime - multi-server support via AJAX season loading
 
-const cheerio = require('cheerio-without-node-native');
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 const DOMAINS_URL = "https://raw.githubusercontent.com/phisher98/TVVVV/refs/heads/main/domains.json";
 
@@ -12,7 +12,7 @@ const HEADERS = {
 
 async function getBaseUrl() {
   try {
-    const domains = await (await fetch(DOMAINS_URL, { skipSizeCheck: true })).json();
+    const domains = await (await fetch(DOMAINS_URL)).json();
     return domains.toonstream || "https://toonstream.vip";
   } catch (e) {
     return "https://toonstream.vip";
@@ -34,7 +34,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
 
     // 1. Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl)).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
@@ -42,7 +42,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     let searchHref = null;
     for (let i = 1; i <= 3; i++) {
       const searchUrl = `${BASE_URL}/page/${i}/?s=${encodeURIComponent(title)}`;
-      const searchHtml = await (await fetch(searchUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+      const searchHtml = await (await fetch(searchUrl, { headers: HEADERS})).text();
       const $ = cheerio.load(searchHtml);
       const first = $('#movies-a > ul > li article > a').first().attr('href');
       if (first) {
@@ -55,7 +55,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     if (!searchHref.startsWith('http')) searchHref = BASE_URL + searchHref;
 
     // 3. Load the content page
-    const pageHtml = await (await fetch(searchHref, { headers: HEADERS, skipSizeCheck: true })).text();
+    const pageHtml = await (await fetch(searchHref, { headers: HEADERS})).text();
     const $page = cheerio.load(pageHtml);
 
     const isSeries = searchHref.includes('series') || mediaType === 'tv';
@@ -85,9 +85,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
             'Content-Type': 'application/x-www-form-urlencoded',
             'X-Requested-With': 'XMLHttpRequest'
           },
-          body: `action=action_select_season&season=${targetSeason.dataSeason}&post=${targetSeason.dataPost}`,
-          skipSizeCheck: true
-        })).text();
+          body: `action=action_select_season&season=${targetSeason.dataSeason}&post=${targetSeason.dataPost}`})).text();
 
         const $season = cheerio.load(ajaxResponse);
 
@@ -105,7 +103,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         );
 
         if (targetEp && targetEp.href) {
-          const epPageHtml = await (await fetch(targetEp.href, { headers: HEADERS, skipSizeCheck: true })).text();
+          const epPageHtml = await (await fetch(targetEp.href, { headers: HEADERS})).text();
           const $ep = cheerio.load(epPageHtml);
 
           // Extract iframes from servers
@@ -117,7 +115,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
 
           for (const serverLink of serverLinks.slice(0, 3)) {
             try {
-              const serverHtml = await (await fetch(serverLink, { headers: HEADERS, skipSizeCheck: true })).text();
+              const serverHtml = await (await fetch(serverLink, { headers: HEADERS})).text();
               const $server = cheerio.load(serverHtml);
               const trueLink = $server('iframe').attr('src') || '';
               if (trueLink) {

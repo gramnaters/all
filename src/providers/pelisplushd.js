@@ -1,9 +1,9 @@
+const cheerio = require('cheerio-without-node-native');
 // pelisplushd.js
 // Pelisplushd provider — Spanish-language movies/series
 // Uses IMDB ID from TMDB to build embed URL like: mainUrl/f/{imdb_id} or mainUrl/f/{imdb_id}-{season}x0{episode}
 // Then decrypts links via /api/decrypt endpoint
 
-const cheerio = require('cheerio-without-node-native');
 const BASE_URL = "https://pelisplushd.nz";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 const HEADERS = {
@@ -15,7 +15,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   try {
     // 1. Get IMDB ID from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}&append_to_response=external_ids`;
-    const mediaInfo = await (await fetch(tmdbUrl, { headers: HEADERS, skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl, { headers: HEADERS})).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
@@ -27,7 +27,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
       ? `${BASE_URL}/f/${imdbId}-${season}x0${episode}`
       : `${BASE_URL}/f/${imdbId}`;
 
-    const pageHtml = await (await fetch(iframePath, { headers: HEADERS, skipSizeCheck: true })).text();
+    const pageHtml = await (await fetch(iframePath, { headers: HEADERS})).text();
     const $ = cheerio.load(pageHtml);
 
     // 3. Extract dataLink JSON from script
@@ -62,9 +62,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         const decryptResp = await (await fetch(`${BASE_URL}/api/decrypt`, {
           method: "POST",
           headers: { ...HEADERS, "Content-Type": "application/json; charset=utf-8" },
-          body,
-          skipSizeCheck: true
-        })).json();
+          body})).json();
 
         if (decryptResp?.success && Array.isArray(decryptResp.links)) {
           for (const linkObj of decryptResp.links) {

@@ -31,14 +31,14 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   try {
     // 1. Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl)).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
     // 2. Search via /api/search
     const isTV = mediaType === "tv";
     const searchUrl = `${BASE_URL}/api/search?q=${encodeURIComponent(title)}&page=1&limit=8`;
-    const searchData = await (await fetch(searchUrl, { headers: HEADERS, skipSizeCheck: true })).json();
+    const searchData = await (await fetch(searchUrl, { headers: HEADERS})).json();
     const results = searchData.results || [];
 
     if (!results.length) return [];
@@ -57,7 +57,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
       ? `${BASE_URL}/api/series/${match.slug}`
       : `${BASE_URL}/api/movies/${match.slug}`;
 
-    const detail = await (await fetch(detailUrl, { headers: HEADERS, skipSizeCheck: true })).json();
+    const detail = await (await fetch(detailUrl, { headers: HEADERS})).json();
 
     let contentId = "";
     let contentType = "";
@@ -82,7 +82,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
 
           const seasonUrl = `${BASE_URL}/api/series/${match.slug}/season/${sNum}`;
           try {
-            const seasonData = await (await fetch(seasonUrl, { headers: HEADERS, skipSizeCheck: true })).json();
+            const seasonData = await (await fetch(seasonUrl, { headers: HEADERS})).json();
             const seasonObj = seasonData.season || seasonData;
             targetEpisode = (seasonObj.episodes || []).find(e => e.episodeNumber === episode);
           } catch (e) {}
@@ -103,7 +103,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
 
     // 4. Get play-info
     const playUrl = `${BASE_URL}/api/watch/play-info/${contentType}/${contentId}`;
-    const playResp = await fetch(playUrl, { headers: HEADERS, skipSizeCheck: true });
+    const playResp = await fetch(playUrl, { headers: HEADERS});
     const playCookies = playResp.headers.get ? playResp.headers.get("set-cookie") : "";
     const playInfo = await playResp.json();
 
@@ -120,9 +120,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     const claimResp = await fetch(`${BASE_URL}/api/watch/session/claim`, {
       method: "POST",
       headers: HEADERS,
-      body: JSON.stringify({ gateToken: playInfo.gateToken }),
-      skipSizeCheck: true
-    });
+      body: JSON.stringify({ gateToken: playInfo.gateToken })});
     const claimData = await claimResp.json();
 
     if (!claimData.claim || !claimData.redeemUrl) return [];
@@ -131,16 +129,13 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     const redeemResp = await fetch(claimData.redeemUrl, {
       method: "POST",
       headers: HEADERS,
-      body: JSON.stringify({ claim: claimData.claim }),
-      skipSizeCheck: true
-    });
+      body: JSON.stringify({ claim: claimData.claim })});
     const redeemData = await redeemResp.json();
 
     if (!redeemData.url) return [];
 
     const streams = [];
     streams.push({
-      name: "Idlix",
       url: redeemData.url,
       quality: "1080p",
       title: "Idlix",

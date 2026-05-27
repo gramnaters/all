@@ -1,3 +1,4 @@
+const cheerio = require('cheerio-without-node-native');
 // hindmoviez.js
 // Hindmoviez - Hindi movie & web series site (hindmoviez.cafe)
 // Search: /page/1/?s={query}
@@ -5,7 +6,6 @@
 // TV: h3 Season headers → episode list URLs → per-episode signed HShare URLs
 // HShare signing uses HMAC-SHA256 (approximated here since we can't do crypto in vanilla JS easily)
 
-const cheerio = require('cheerio-without-node-native');
 const BASE_URL = "https://hindmoviez.cafe";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 const HEADERS = {
@@ -26,13 +26,13 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   try {
     // 1. Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl)).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
     // 2. Search
     const searchUrl = `${BASE_URL}/page/1/?s=${encodeURIComponent(title)}`;
-    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const searchHtml = await (await fetch(searchUrl, { headers: HEADERS})).text();
     const $ = cheerio.load(searchHtml);
 
     const results = [];
@@ -57,7 +57,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     const pageUrl = match.url.startsWith("http") ? match.url : `${BASE_URL}${match.url}`;
 
     // 3. Load page
-    const pageHtml = await (await fetch(pageUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const pageHtml = await (await fetch(pageUrl, { headers: HEADERS})).text();
     const $page = cheerio.load(pageHtml);
 
     const streams = [];
@@ -81,7 +81,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         if (!episodeListUrl) continue;
 
         try {
-          const epListHtml = await (await fetch(episodeListUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+          const epListHtml = await (await fetch(episodeListUrl, { headers: HEADERS})).text();
           const $epList = cheerio.load(epListHtml);
 
           const epAnchors = $epList("h3 > a").toArray();
@@ -96,7 +96,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
 
             // This is a signed URL - follow it to get download buttons
             try {
-              const epPageHtml = await (await fetch(epHref, { headers: HEADERS, skipSizeCheck: true })).text();
+              const epPageHtml = await (await fetch(epHref, { headers: HEADERS})).text();
               const $epPage = cheerio.load(epPageHtml);
 
               $epPage("a.btn").each((i, btn) => {
@@ -125,7 +125,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
           const btnUrl = $page(btn).attr("href");
           if (!btnUrl) continue;
 
-          const btnPageHtml = await (await fetch(btnUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+          const btnPageHtml = await (await fetch(btnUrl, { headers: HEADERS})).text();
           const $btnPage = cheerio.load(btnPageHtml);
 
           const getLinksAnchors = $btnPage("div.entry-content a:contains('Get Links')").toArray();
@@ -134,7 +134,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
               const linkUrl = $btnPage(linkA).attr("href");
               if (!linkUrl) continue;
 
-              const linkPageHtml = await (await fetch(linkUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+              const linkPageHtml = await (await fetch(linkUrl, { headers: HEADERS})).text();
               const $linkPage = cheerio.load(linkPageHtml);
 
               const name = ($linkPage("div.container p").filter((i, p) => $linkPage(p).text().includes("Name:")).first().text() || "").replace("Name:", "").trim();

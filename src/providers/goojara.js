@@ -1,10 +1,10 @@
+const cheerio = require('cheerio-without-node-native');
 // goojara.js
 // Goojara - English movie & series site (ww1.goojara.to)
 // Search: POST to /xmre.php with form data z, x, q
 // Episodes: GET season page /?s={seasonNum}  then div.seho elements
 // Stream: #drl a links → redirect with Cookie → final embed URL
 
-const cheerio = require('cheerio-without-node-native');
 const BASE_URL = "https://ww1.goojara.to";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 const HEADERS = {
@@ -27,7 +27,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   try {
     // 1. Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl)).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
@@ -44,9 +44,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         ...HEADERS,
         "Content-Type": "application/x-www-form-urlencoded"
       },
-      body: searchBody.toString(),
-      skipSizeCheck: true
-    });
+      body: searchBody.toString()});
 
     const searchHtml = await searchResp.text();
     const $ = cheerio.load(searchHtml);
@@ -69,13 +67,13 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     const matchUrl = match.url.startsWith("http") ? match.url : `${BASE_URL}${match.url}`;
 
     // Need to fetch the intermediate page to get the real show URL
-    const matchPageHtml = await (await fetch(matchUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const matchPageHtml = await (await fetch(matchUrl, { headers: HEADERS})).text();
     const $match = cheerio.load(matchPageHtml);
     const showHref = $match("div.snfo h1 a").attr("href") || matchUrl;
     const showUrl = showHref.startsWith("http") ? showHref : `${BASE_URL}${showHref}`;
 
     // 3. Load show page
-    const showHtml = await (await fetch(showUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+    const showHtml = await (await fetch(showUrl, { headers: HEADERS})).text();
     const $show = cheerio.load(showHtml);
 
     let targetUrl = showUrl;
@@ -92,7 +90,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
       const seasonHref = seasonLink.split("?s=")[0] + `?s=${season}`;
       const seasonUrl = seasonHref.startsWith("http") ? seasonHref : `${BASE_URL}${seasonHref}`;
 
-      const seasonHtml = await (await fetch(seasonUrl, { headers: HEADERS, skipSizeCheck: true })).text();
+      const seasonHtml = await (await fetch(seasonUrl, { headers: HEADERS})).text();
       const $season = cheerio.load(seasonHtml);
 
       let epUrl = "";
@@ -112,9 +110,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
 
     // 4. Load player page and get #drl links
     const playerResp = await fetch(targetUrl, {
-      headers: { ...HEADERS, Referer: "https://www.goojara.to", Cookie: "" },
-      skipSizeCheck: true
-    });
+      headers: { ...HEADERS, Referer: "https://www.goojara.to", Cookie: "" }});
     const playerHtml = await playerResp.text();
     const $player = cheerio.load(playerHtml);
 
@@ -138,9 +134,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
             Referer: BASE_URL,
             Cookie: cookieStr
           },
-          redirect: "manual",
-          skipSizeCheck: true
-        });
+          redirect: "manual"});
         const embedUrl = redirectResp.headers.get ? redirectResp.headers.get("location") : "";
         if (embedUrl && embedUrl.startsWith("http")) {
           streams.push({

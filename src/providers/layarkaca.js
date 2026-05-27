@@ -1,7 +1,7 @@
+const cheerio = require('cheerio-without-node-native');
 // layarkaca.js
 // LayarKaca - Indonesian movie/series provider via lk21.de and series.lk21.de
 
-const cheerio = require('cheerio-without-node-native');
 const BASE_URL = "https://lk21.de";
 const SERIES_URL = "https://series.lk21.de";
 const SEARCH_URL = "https://gudangvape.com";
@@ -16,15 +16,13 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   try {
     // Step 1: Get title from TMDB
     const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}?api_key=${TMDB_API_KEY}`;
-    const mediaInfo = await (await fetch(tmdbUrl, { skipSizeCheck: true })).json();
+    const mediaInfo = await (await fetch(tmdbUrl)).json();
     const title = mediaInfo.title || mediaInfo.name;
     if (!title) return [];
 
     // Step 2: Search via the search API endpoint
     const searchResp = await fetch(`${SEARCH_URL}/search.php?s=${encodeURIComponent(title)}`, {
-      headers: { "Referer": BASE_URL },
-      skipSizeCheck: true
-    });
+      headers: { "Referer": BASE_URL }});
     const searchText = await searchResp.text();
 
     let items = [];
@@ -59,7 +57,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     }
 
     // Step 3: Load the content page
-    const pageResp = await fetch(contentUrl, { headers: HEADERS, skipSizeCheck: true });
+    const pageResp = await fetch(contentUrl, { headers: HEADERS});
     const pageHtml = await pageResp.text();
     const $ = cheerio.load(pageHtml);
 
@@ -77,9 +75,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         try {
           // Each link goes to an episode/player page with an iframe
           const subPageResp = await fetch(linkUrl, {
-            headers: { "Referer": SERIES_URL + "/" },
-            skipSizeCheck: true
-          });
+            headers: { "Referer": SERIES_URL + "/" }});
           const subHtml = await subPageResp.text();
           const $s = cheerio.load(subHtml);
           const iframeSrc = $s("div.embed-container iframe").attr("src");
@@ -131,9 +127,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
       // Load episode page
       try {
         const epResp = await fetch(targetEpUrl, {
-          headers: { "Referer": `${SERIES_URL}/` },
-          skipSizeCheck: true
-        });
+          headers: { "Referer": `${SERIES_URL}/` }});
         const epHtml = await epResp.text();
         const $ep = cheerio.load(epHtml);
 
@@ -147,9 +141,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         for (const linkUrl of playerLinks.slice(0, 3)) {
           try {
             const subResp = await fetch(linkUrl, {
-              headers: { "Referer": `${SERIES_URL}/` },
-              skipSizeCheck: true
-            });
+              headers: { "Referer": `${SERIES_URL}/` }});
             const subHtml = await subResp.text();
             const $s = cheerio.load(subHtml);
             const iframeSrc = $s("div.embed-container iframe").attr("src");
