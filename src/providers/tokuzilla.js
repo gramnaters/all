@@ -2,6 +2,7 @@
 // Provider: TokuZilla (https://tokuzilla.net)
 // Scrapes tokuzilla.net for tokusatsu/anime/series streams via embedded iframe + AES decryption
 
+const cheerio = require('cheerio-without-node-native');
 const BASE_URL = "https://tokuzilla.net";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 
@@ -150,3 +151,5 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     return [];
   }
 }
+
+module.exports = { getStreams };

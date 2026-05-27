@@ -63,6 +63,7 @@ async function invokeTorrentio(imdbId, season, episode) {
       const magnet = buildMagnet(stream.infoHash, trackers, stream.sources || []);
       const title = `Torrentio | ${quality} | Seeders: ${seeder}`;
       return {
+        name: title,
         url: magnet,
         quality: extractQuality(quality),
         title,
@@ -88,6 +89,7 @@ async function invokeThePirateBay(imdbId, season, episode) {
       const magnet = buildMagnet(stream.infoHash, trackers, []);
       const quality = extractQuality(stream.title || '');
       return {
+        name: `ThePirateBay | ${stream.title || ''}`,
         url: magnet,
         quality,
         title: `ThePirateBay | ${stream.title || ''}`,
@@ -115,6 +117,7 @@ async function invokeTorrentsDB(imdbId, season, episode) {
       const seeder = title.match(/👤\s*(\d+)/)?.[1] || '0';
       const magnet = buildMagnet(stream.infoHash, [], stream.sources || []);
       return {
+        name: `TorrentsDB | ${quality} | Seeders: ${seeder}`,
         url: magnet,
         quality: extractQuality(quality),
         title: `TorrentsDB | ${quality} | Seeders: ${seeder}`,
@@ -162,3 +165,5 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     return [];
   }
 }
+
+module.exports = { getStreams };

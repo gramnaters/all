@@ -1,6 +1,6 @@
 "use strict";
 
-import cheerio from "cheerio-without-node-native";
+const cheerio = require('cheerio-without-node-native');
 
 // ======================
 // Constants
@@ -807,4 +807,4 @@ async function getStreams(
 // Export
 // ======================
 
-export { getStreams };
+module.exports = { getStreams };

@@ -3,6 +3,8 @@
 // Uses a Cloudflare Worker proxy for requests
 // Stream links: found from .MovieList .OptionBx items → iframe extraction
 
+const cheerio = require('cheerio-without-node-native');
+
 const BASE_URL = "https://desicinemas.to";
 const PROXY = "https://desicinemas.phisherdesicinema.workers.dev/";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
@@ -74,6 +76,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
 
         const name = $page("p.AAIco-dns", box).text().trim() || "Desicinemas";
         streams.push({
+          name: `Desicinemas [${name}]`,
           url: iframeSrc,
           quality: extractQuality(iframeSrc),
           title: `Desicinemas [${name}]`,
@@ -88,3 +91,5 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     return [];
   }
 }
+
+module.exports = { getStreams };

@@ -3,6 +3,7 @@
 // Searches title, finds episode URL, extracts iframes from page
 // Iframes may use url= param, also handles PiratexplayExtractor (#playerFrame)
 
+const cheerio = require('cheerio-without-node-native');
 const BASE_URL = "https://piratexplay.cc";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 const HEADERS = {
@@ -124,3 +125,5 @@ function extractQuality(url) {
   if (u.includes("360p")) return "360p";
   return "Unknown";
 }
+
+module.exports = { getStreams };

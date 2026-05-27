@@ -4,6 +4,8 @@
 // Download links: a.maxbutton → redirect pages with more maxbutton links → final stream URLs
 // Uses Cinemeta for metadata enhancement
 
+const cheerio = require('cheerio-without-node-native');
+
 const BASE_URL = "https://dudefilms.sarl";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 const CINEMETA_URL = "https://v3-cinemeta.strem.io/meta";
@@ -90,6 +92,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
 
                 // This URL is a final stream link
                 streams.push({
+                  name: `DudeFilms [S${season}E${episode}]`,
                   url: epUrl,
                   quality: extractQuality(epUrl),
                   title: `DudeFilms [S${season}E${episode}]`,
@@ -116,6 +119,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
             const href = $btn(a).attr("href");
             if (href && href.startsWith("http")) {
               streams.push({
+                name: `DudeFilms`,
                 url: href,
                 quality: extractQuality(href),
                 title: `DudeFilms`,
@@ -133,3 +137,5 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     return [];
   }
 }
+
+module.exports = { getStreams };

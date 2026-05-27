@@ -2,6 +2,8 @@
 // AnimeDekho (https://animedekho.app) - Hindi dubbed anime, uses WP post-ID to find iframes
 // Searches site, gets body class postid, loops trdekho=0..10 to find iframes
 
+const cheerio = require('cheerio-without-node-native');
+
 const BASE_URL = "https://animedekho.app";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 const HEADERS = {
@@ -88,6 +90,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
 
         if (iframeSrc && iframeSrc.startsWith("http")) {
           streams.push({
+            name: `AnimeDekho [S${season || 1}E${epNum}]`,
             url: iframeSrc,
             quality: "Unknown",
             title: `AnimeDekho [S${season || 1}E${epNum}]`,
@@ -103,3 +106,5 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     return [];
   }
 }
+
+module.exports = { getStreams };

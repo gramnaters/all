@@ -2,6 +2,8 @@
 // AnimeCloud (https://fireani.me) - German anime site with REST JSON API
 // API: /api/anime/search?q=, /api/anime?slug=, /api/anime/episode?slug=&season=&episode=
 
+const cheerio = require('cheerio-without-node-native');
+
 const BASE_URL = "https://fireani.me";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 const HEADERS = {
@@ -66,6 +68,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         const m3u8Match = pageHtml.match(/file:\s*["']([^"']+\.m3u8[^"']*)/i);
         if (m3u8Match) {
           streams.push({
+            name: `AnimeCloud [${lang}]`,
             url: m3u8Match[1],
             quality: "1080p",
             title: `AnimeCloud [${lang}]`,
@@ -79,6 +82,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         if (iframeSrc) {
           const iframeUrl = iframeSrc.startsWith("http") ? iframeSrc : BASE_URL + iframeSrc;
           streams.push({
+            name: `AnimeCloud [${lang}]`,
             url: iframeUrl,
             quality: "1080p",
             title: `AnimeCloud [${lang}]`,
@@ -88,6 +92,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
       } catch (_) {
         // If extraction fails, add raw link
         streams.push({
+          name: `AnimeCloud [${lang}]`,
           url: href,
           quality: "Unknown",
           title: `AnimeCloud [${lang}]`,
@@ -102,3 +107,5 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     return [];
   }
 }
+
+module.exports = { getStreams };

@@ -2,6 +2,7 @@
 // Provider: TokusatsuUltimate (https://toku555.com)
 // Scrapes toku555.com for tokusatsu content and extracts HLS via AES decryption
 
+const cheerio = require('cheerio-without-node-native');
 const BASE_URL = "https://toku555.com";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 
@@ -150,3 +151,5 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     return [];
   }
 }
+
+module.exports = { getStreams };

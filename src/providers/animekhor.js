@@ -2,6 +2,8 @@
 // Animekhor (https://animekhor.org) - Anime/Donghua streaming in Chinese
 // Episode servers use base64-encoded HTML containing iframe src URLs
 
+const cheerio = require('cheerio-without-node-native');
+
 const BASE_URL = "https://animekhor.org";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 const HEADERS = {
@@ -94,6 +96,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
           if (url.startsWith("//")) url = "https:" + url;
           if (url.startsWith("http")) {
             streams.push({
+              name: "Animekhor",
               url,
               quality: "Unknown",
               title: "Animekhor",
@@ -110,3 +113,5 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     return [];
   }
 }
+
+module.exports = { getStreams };

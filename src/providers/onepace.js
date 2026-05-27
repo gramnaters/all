@@ -2,6 +2,7 @@
 // OnePace provider — scrapes https://onepace.co for One Pace anime arcs (sub & dub)
 // Searches by arc name, then iterates over up to 8 iframe slots per episode
 
+const cheerio = require('cheerio-without-node-native');
 const BASE_URL = "https://onepace.co";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 const HEADERS = {
@@ -99,3 +100,5 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     return [];
   }
 }
+
+module.exports = { getStreams };

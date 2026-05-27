@@ -65,6 +65,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     // Video source
     if (source && source.Video && source.Video.includes(".m3u8")) {
       streams.push({
+        name: "KissKH",
         url: source.Video.startsWith("http") ? source.Video : `${BASE_URL}${source.Video}`,
         quality: "1080p",
         title: "KissKH",
@@ -77,6 +78,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
       const tp = source.ThirdParty;
       if (tp.includes(".m3u8") || tp.includes("mp4")) {
         streams.push({
+          name: "KissKH (ThirdParty)",
           url: tp.startsWith("http") ? tp : `${BASE_URL}${tp}`,
           quality: "720p",
           title: "KissKH (ThirdParty)",
@@ -109,3 +111,5 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     return [];
   }
 }
+
+module.exports = { getStreams };

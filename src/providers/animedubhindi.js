@@ -2,6 +2,8 @@
 // AnimeDubHindi (https://www.animedubhindi.me) - Hindi dubbed anime
 // Downloads via HubCloud/GDFlix links, episodes parsed from series page
 
+const cheerio = require('cheerio-without-node-native');
+
 const BASE_URL = "https://www.animedubhindi.me";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 const HEADERS = {
@@ -55,6 +57,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
           const href = $3(a).attr("href");
           if (href && (href.includes("hubcloud") || href.includes("gdflix"))) {
             streams.push({
+              name: `AnimeDubHindi [${quality}]`,
               url: href,
               quality: quality.includes("1080") ? "1080p" : quality.includes("720") ? "720p" : quality.includes("480") ? "480p" : "Unknown",
               title: `AnimeDubHindi [${quality}]`,
@@ -81,6 +84,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
             const href = $3(a).attr("href");
             if (href && (href.includes("hubcloud") || href.includes("gdflix"))) {
               streams.push({
+                name: `AnimeDubHindi [E${targetEp}]`,
                 url: href,
                 quality: "Unknown",
                 title: `AnimeDubHindi [E${targetEp}]`,
@@ -121,3 +125,5 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     return [];
   }
 }
+
+module.exports = { getStreams };

@@ -140,6 +140,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
 
     const streams = [];
     streams.push({
+      name: "Idlix",
       url: redeemData.url,
       quality: "1080p",
       title: "Idlix",
@@ -155,3 +156,5 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     return [];
   }
 }
+
+module.exports = { getStreams };

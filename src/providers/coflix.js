@@ -3,6 +3,8 @@
 // Uses WP-JSON API: /wp-json/apiflix/v1  and suggest.php for search
 // Stream links: iFrame → li[onclick] with base64 encoded URLs
 
+const cheerio = require('cheerio-without-node-native');
+
 const BASE_URL = "https://coflix.wales";
 const COFLIX_API = `${BASE_URL}/wp-json/apiflix/v1`;
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
@@ -85,6 +87,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         const url = atob(b64Match[1]);
         if (url.startsWith("http")) {
           streams.push({
+            name: `Coflix [${$iframe(li).text().trim() || "Stream"}]`,
             url,
             quality: extractQuality(url),
             title: `Coflix [${$iframe(li).text().trim() || "Stream"}]`,
@@ -100,3 +103,5 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     return [];
   }
 }
+
+module.exports = { getStreams };

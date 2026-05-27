@@ -2,6 +2,7 @@
 // Pencurimovie provider — Indonesian movies/series/anime
 // Searches by title, finds the show page, then extracts iframes from div.movieplay
 
+const cheerio = require('cheerio-without-node-native');
 const BASE_URL = "https://ww73.pencurimovie.bond";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 const HEADERS = {
@@ -91,3 +92,5 @@ function extractQuality(url) {
   if (u.includes("360p")) return "360p";
   return "Unknown";
 }
+
+module.exports = { getStreams };

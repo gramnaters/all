@@ -2,6 +2,7 @@
 // MassTamilan - Tamil/Telugu/Hindi music songs provider via masstamilan.dev
 // Note: This is primarily a music provider (audio streams), not video
 
+const cheerio = require('cheerio-without-node-native');
 const BASE_URL = "https://masstamilan.dev";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 const PROXY = "https://goodproxy.goodproxy.workers.dev/fetch?url=";
@@ -99,3 +100,5 @@ function extractQuality(text) {
   if (t.includes("128")) return "Unknown";
   return "Unknown";
 }
+
+module.exports = { getStreams };

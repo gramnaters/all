@@ -71,6 +71,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
           const epMatch = key.match(/(\d+)/);
           if (epMatch && parseInt(epMatch[1]) === parseInt(episode)) {
             streams.push({
+              name: `RingZ [${key}]`,
               url: value,
               quality: inferQuality(value, key),
               title: `RingZ [${key}]`,
@@ -87,6 +88,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         const value = item[key];
         if (typeof value === "string" && value.startsWith("http")) {
           streams.push({
+            name: `RingZ [${key}]`,
             url: value,
             quality: inferQuality(value, key),
             title: `RingZ [${key}]`,
@@ -102,6 +104,8 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     return [];
   }
 }
+
+module.exports = { getStreams };
 
 function inferQuality(url, key) {
   const check = (s) => {

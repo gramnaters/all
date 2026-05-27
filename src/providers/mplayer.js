@@ -1,6 +1,7 @@
 // mplayer.js
 // MPlayer - MX Player India streaming provider via api.mxplayer.in
 
+const cheerio = require('cheerio-without-node-native');
 const BASE_URL = "https://www.mxplayer.in";
 const WEB_API = "https://api.mxplayer.in/v1/web";
 const ENDPOINT_URL = "https://d3sgzbosmwirao.cloudfront.net/";
@@ -161,3 +162,5 @@ function normalizeUrl(url) {
   if (url.startsWith("http")) return url;
   return ENDPOINT_URL + url;
 }
+
+module.exports = { getStreams };

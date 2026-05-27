@@ -1,6 +1,7 @@
 // latanime.js
 // Latanime - Spanish-language anime provider via latanime.org
 
+const cheerio = require('cheerio-without-node-native');
 const BASE_URL = "https://latanime.org";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 
@@ -145,3 +146,5 @@ String.prototype.substringAfter = function(delimiter) {
   const idx = this.indexOf(delimiter);
   return idx === -1 ? this : this.slice(idx + delimiter.length);
 };
+
+module.exports = { getStreams };

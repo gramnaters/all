@@ -1,6 +1,7 @@
 // movies4u.js
 // Movies4u - Hindi/Bollywood/Hollywood download links provider via movies4u.style
 
+const cheerio = require('cheerio-without-node-native');
 const DOMAINS_URL = "https://raw.githubusercontent.com/phisher98/TVVVV/refs/heads/main/domains.json";
 const FALLBACK_URL = "https://new2.movies4u.style";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
@@ -165,3 +166,5 @@ function extractQuality(url) {
   if (u.includes("360p")) return "360p";
   return "Unknown";
 }
+
+module.exports = { getStreams };

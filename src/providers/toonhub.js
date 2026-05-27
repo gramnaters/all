@@ -2,6 +2,7 @@
 // Provider: ToonHub4u (https://toonhub4u.co)
 // Hindi/English dubbed anime and cartoons - extracts embed links from Google Drive / cloud hosts
 
+const cheerio = require('cheerio-without-node-native');
 const BASE_URL = "https://toonhub4u.co";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 
@@ -96,3 +97,5 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     return [];
   }
 }
+
+module.exports = { getStreams };

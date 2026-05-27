@@ -95,6 +95,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
           if (m3u8Match) {
             const m3u8Url = m3u8Match[0].startsWith("//") ? "https:" + m3u8Match[0] : m3u8Match[0];
             streams.push({
+              name: `KickassAnime ${server.name}`,
               url: m3u8Url,
               quality: "1080p",
               title: `KickassAnime ${server.name}`,
@@ -129,6 +130,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
                 }
               }
               streams.push({
+                name: `KickassAnime ${server.name}`,
                 url: videoUrl,
                 quality: "1080p",
                 title: `KickassAnime ${server.name}`,
@@ -148,3 +150,5 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     return [];
   }
 }
+
+module.exports = { getStreams };

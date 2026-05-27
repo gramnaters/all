@@ -5,6 +5,7 @@
 // TV: h3 Season headers → episode list URLs → per-episode signed HShare URLs
 // HShare signing uses HMAC-SHA256 (approximated here since we can't do crypto in vanilla JS easily)
 
+const cheerio = require('cheerio-without-node-native');
 const BASE_URL = "https://hindmoviez.cafe";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 const HEADERS = {
@@ -162,3 +163,5 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     return [];
   }
 }
+
+module.exports = { getStreams };

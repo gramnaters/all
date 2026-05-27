@@ -2,6 +2,7 @@
 // Provider: Toonstream (https://toonstream.vip)
 // Hindi dubbed cartoons and anime - multi-server support via AJAX season loading
 
+const cheerio = require('cheerio-without-node-native');
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 const DOMAINS_URL = "https://raw.githubusercontent.com/phisher98/TVVVV/refs/heads/main/domains.json";
 
@@ -153,3 +154,5 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     return [];
   }
 }
+
+module.exports = { getStreams };

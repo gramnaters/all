@@ -1,6 +1,7 @@
 // layarkaca.js
 // LayarKaca - Indonesian movie/series provider via lk21.de and series.lk21.de
 
+const cheerio = require('cheerio-without-node-native');
 const BASE_URL = "https://lk21.de";
 const SERIES_URL = "https://series.lk21.de";
 const SEARCH_URL = "https://gudangvape.com";
@@ -173,3 +174,5 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     return [];
   }
 }
+
+module.exports = { getStreams };

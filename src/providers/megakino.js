@@ -1,6 +1,7 @@
 // megakino.js
 // Megakino - German movies/series provider via megakino.team with Gxplayer embeds
 
+const cheerio = require('cheerio-without-node-native');
 const BASE_URL = "https://megakino.team";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 
@@ -142,3 +143,5 @@ function mapQuality(q) {
   if (u.includes("480")) return "480p";
   return "Unknown";
 }
+
+module.exports = { getStreams };

@@ -400,8 +400,6 @@ function getStreams(
               );
 
               continue;
-
-              continue;
             }
 
             // INTERNAL JSON

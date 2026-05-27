@@ -1,6 +1,7 @@
 // movierulzhd.js
 // Movierulzhd - Hindi movies/series provider with WordPress admin-ajax embed extraction
 
+const cheerio = require('cheerio-without-node-native');
 const DOMAINS_URL = "https://raw.githubusercontent.com/phisher98/TVVVV/refs/heads/main/domains.json";
 const FALLBACK_URL = "https://123moviesfree9.cloud";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
@@ -194,3 +195,5 @@ function extractQuality(url) {
   if (u.includes("360p")) return "360p";
   return "Unknown";
 }
+
+module.exports = { getStreams };

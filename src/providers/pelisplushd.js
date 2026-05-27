@@ -3,6 +3,7 @@
 // Uses IMDB ID from TMDB to build embed URL like: mainUrl/f/{imdb_id} or mainUrl/f/{imdb_id}-{season}x0{episode}
 // Then decrypts links via /api/decrypt endpoint
 
+const cheerio = require('cheerio-without-node-native');
 const BASE_URL = "https://pelisplushd.nz";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 const HEADERS = {
@@ -97,3 +98,5 @@ function extractQuality(url) {
   if (u.includes("360p")) return "360p";
   return "Unknown";
 }
+
+module.exports = { getStreams };

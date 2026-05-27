@@ -3,6 +3,8 @@
 // Episodes loaded via AJAX: /wp-admin/admin-ajax.php?action=get_episodes&anime_id={seasonId}&page=1&order=desc
 // Stream: span[data-embed-id] with base64-encoded "name:url" pairs
 
+const cheerio = require('cheerio-without-node-native');
+
 const BASE_URL = "https://dorabash.in";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 const HEADERS = {
@@ -99,6 +101,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
           const type = container.hasClass("player-dub") ? "DUB" :
                        container.hasClass("player-sub") ? "SUB" : "";
           streams.push({
+            name: `DoraBash [${name}${type ? " " + type : ""}]`,
             url,
             quality: extractQuality(url),
             title: `DoraBash [${name}${type ? " " + type : ""}]`,
@@ -114,3 +117,5 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     return [];
   }
 }
+
+module.exports = { getStreams };

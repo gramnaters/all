@@ -4,6 +4,8 @@
 // Video IDs from input#video-id → /ajax/resolution_switcher.php?video_id={id}
 // Episodes via: /ajax/episodes.php?video_id={id}
 
+const cheerio = require('cheerio-without-node-native');
+
 const BASE_URL = "https://fibwatch.top";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 const HEADERS = {
@@ -105,6 +107,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
           // Direct media check
           if (url.match(/\.(mp4|mkv|m3u8)/i)) {
             streams.push({
+              name: `FibWatch [${item.res || "Stream"}]`,
               url,
               quality: extractQuality(item.res || url),
               title: `FibWatch [${item.res || "Stream"}]`,
@@ -118,6 +121,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
               const dlUrl = ($dl("a.hidden-button.buttonDownloadnew").attr("href") || "").replace(/.*url=/, "").trim();
               if (dlUrl && dlUrl.startsWith("http")) {
                 streams.push({
+                  name: `FibWatch [${item.res || "Stream"}]`,
                   url: dlUrl,
                   quality: extractQuality(item.res || dlUrl),
                   title: `FibWatch [${item.res || "Stream"}]`,
@@ -183,3 +187,5 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     return [];
   }
 }
+
+module.exports = { getStreams };

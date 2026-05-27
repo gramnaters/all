@@ -1,6 +1,7 @@
 // netcinez.js
 // Netcinez - Portuguese (Brazilian) movies/series provider via netcinez.si
 
+const cheerio = require('cheerio-without-node-native');
 const BASE_URL = "https://netcinez.si";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 
@@ -199,3 +200,5 @@ function extractQuality(text) {
   if (u.includes("360p")) return "360p";
   return "Unknown";
 }
+
+module.exports = { getStreams };

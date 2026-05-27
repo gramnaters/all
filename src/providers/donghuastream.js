@@ -3,6 +3,8 @@
 // Search: /pagg/{page}/?s={query}
 // Episodes: /eplister li > a  then episode page has option[data-index] with base64 encoded HTML containing iframe
 
+const cheerio = require('cheerio-without-node-native');
+
 const BASE_URL = "https://donghuastream.org";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 const HEADERS = {
@@ -118,9 +120,10 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         if (!iframeSrc.startsWith("http")) continue;
 
         // Handle vidmoly special case
-        if (iframeSrc.includes("vidmoly")) {
+          if (iframeSrc.includes("vidmoly")) {
           const cleaned = "http:" + iframeSrc.substring(iframeSrc.indexOf('="') + 2).replace('"', "");
           streams.push({
+            name: `Donghuastream [${label}]`,
             url: cleaned,
             quality: extractQuality(label),
             title: `Donghuastream [${label}]`,
@@ -128,6 +131,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
           });
         } else if (iframeSrc.endsWith(".mp4")) {
           streams.push({
+            name: `Donghuastream [${label}]`,
             url: iframeSrc,
             quality: extractQuality(label),
             title: `Donghuastream [${label}]`,
@@ -135,6 +139,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
           });
         } else {
           streams.push({
+            name: `Donghuastream [${label}]`,
             url: iframeSrc,
             quality: extractQuality(label),
             title: `Donghuastream [${label}]`,
@@ -150,3 +155,5 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     return [];
   }
 }
+
+module.exports = { getStreams };

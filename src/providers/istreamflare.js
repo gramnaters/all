@@ -74,6 +74,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
       for (const link of links) {
         if (!link.url) continue;
         streams.push({
+          name: `IStreamFlare ${link.name || ""}`.trim(),
           url: link.url,
           quality: mapQuality(link.quality || ""),
           title: `IStreamFlare ${link.name || ""}`.trim(),
@@ -116,6 +117,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
           if (!ep.url) continue;
 
           streams.push({
+            name: `IStreamFlare ${ep.Episoade_Name || ep.episoadeName || `E${epNum}`}`.trim(),
             url: ep.url,
             quality: "Unknown",
             title: `IStreamFlare ${ep.Episoade_Name || ep.episoadeName || `E${epNum}`}`.trim(),
@@ -131,6 +133,8 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     return [];
   }
 }
+
+module.exports = { getStreams };
 
 function mapQuality(q) {
   const u = (q || "").toLowerCase();
