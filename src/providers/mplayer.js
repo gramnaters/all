@@ -161,4 +161,6 @@ function normalizeUrl(url) {
   return ENDPOINT_URL + url;
 }
 
-module.exports = { getStreams };
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { getStreams };
+}

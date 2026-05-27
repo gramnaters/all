@@ -123,4 +123,6 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   }
 }
 
-module.exports = { getStreams };
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { getStreams };
+}

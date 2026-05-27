@@ -820,4 +820,6 @@ async function getStreams(
 // Export
 // ======================
 
-module.exports = { getStreams };
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { getStreams };
+}

@@ -1,4 +1,18 @@
 const cheerio = require('cheerio-without-node-native');
+
+
+function atob(str) {
+  if (!str) return '';
+  const BASE64_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+  let s = String(str).replace(/=+$/, '');
+  let out = '';
+  let bc = 0, bs, buffer, idx = 0;
+  while ((buffer = BASE64_CHARS.indexOf(s.charAt(idx++))) !== -1 && ~buffer) {
+    bs = bc % 4 ? bs * 64 + buffer : buffer;
+    if (bc++ % 4) out += String.fromCharCode(255 & (bs >> ((-2 * bc) & 6)));
+  }
+  return out;
+}
 // dorabash.js
 // DoraBash - Hindi Doraemon/cartoon/anime site (dorabash.in)
 // Episodes loaded via AJAX: /wp-admin/admin-ajax.php?action=get_episodes&anime_id={seasonId}&page=1&order=desc
@@ -116,4 +130,6 @@ async function getStreams(tmdbId, mediaType, season, episode) {
   }
 }
 
-module.exports = { getStreams };
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { getStreams };
+}

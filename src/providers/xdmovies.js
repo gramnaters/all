@@ -1,6 +1,20 @@
 // ================= XDmovies =================
 const cheerio = require('cheerio-without-node-native');
 
+
+function atob(str) {
+  if (!str) return '';
+  const BASE64_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+  let s = String(str).replace(/=+$/, '');
+  let out = '';
+  let bc = 0, bs, buffer, idx = 0;
+  while ((buffer = BASE64_CHARS.indexOf(s.charAt(idx++))) !== -1 && ~buffer) {
+    bs = bc % 4 ? bs * 64 + buffer : buffer;
+    if (bc++ % 4) out += String.fromCharCode(255 & (bs >> ((-2 * bc) & 6)));
+  }
+  return out;
+}
+
 const XDMOVIES_API = "https://new.xdmovies.wtf";
 
 // TMDB API Configuration
@@ -776,7 +790,9 @@ function getStreams(tmdbId, mediaType = 'movie', season = null, episode = null) 
 // ================= EXPORT =================
 
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { getStreams };
+    if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { getStreams };
+}
 } else {
     global.getStreams = { getStreams };
 }

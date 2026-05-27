@@ -297,7 +297,9 @@ function getStreams(tmdbId, mediaType = 'movie', season = null, episode = null) 
 // ================= EXPORT =================
 
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { getStreams };
+    if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { getStreams };
+}
 } else {
     global.getStreams = { getStreams };
 }

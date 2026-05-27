@@ -232,4 +232,6 @@ function extractQuality(url) {
   return "Unknown";
 }
 
-module.exports = { getStreams };
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { getStreams };
+}

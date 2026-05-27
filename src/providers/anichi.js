@@ -926,6 +926,6 @@ function extractByse(
 }
 
 
-module.exports = {
-  getStreams
-};
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { getStreams };
+}

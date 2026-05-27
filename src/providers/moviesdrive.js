@@ -1405,7 +1405,9 @@ function getStreams(tmdbId, mediaType = 'movie', season = null, episode = null) 
 
 // Export the main function
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { getStreams };
+    if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { getStreams };
+}
 } else {
     // For React Native environment
     global.getStreams = { getStreams };

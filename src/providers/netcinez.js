@@ -191,4 +191,6 @@ function extractQuality(text) {
   return "Unknown";
 }
 
-module.exports = { getStreams };
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { getStreams };
+}
