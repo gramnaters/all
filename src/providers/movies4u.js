@@ -73,10 +73,17 @@ async function getStreams(tmdbId, mediaType, season, episode) {
       for (const link of downloadLinks.slice(0, 8)) {
         if (!link) continue;
         streams.push({
+          name: "Movies4u",
           url: link,
           quality: extractQuality(link),
           title: `Movies4u (${extractQuality(link)})`,
-          subtitles: []
+          subtitles: [],
+          behaviorHints: {
+            notWebReady: true,
+            proxyHeaders: {
+              request: Object.assign({}, HEADERS)
+            }
+          }
         });
       }
     } else {
@@ -126,10 +133,17 @@ async function getStreams(tmdbId, mediaType, season, episode) {
               for (const lnk of links) {
                 if (!lnk) continue;
                 streams.push({
+                  name: "Movies4u",
                   url: lnk,
                   quality: extractQuality(lnk),
                   title: `Movies4u S${sNum}E${epNum}`,
-                  subtitles: []
+                  subtitles: [],
+                  behaviorHints: {
+                    notWebReady: true,
+                    proxyHeaders: {
+                      request: Object.assign({}, HEADERS)
+                    }
+                  }
                 });
               }
             });
@@ -137,10 +151,17 @@ async function getStreams(tmdbId, mediaType, season, episode) {
             // No episode blocks - this might be the direct link
             if (!episode || episode === "1") {
               streams.push({
+                name: "Movies4u",
                 url: href,
                 quality: extractQuality(href),
                 title: `Movies4u S${sNum}`,
-                subtitles: []
+                subtitles: [],
+                behaviorHints: {
+                  notWebReady: true,
+                  proxyHeaders: {
+                    request: Object.assign({}, HEADERS)
+                  }
+                }
               });
             }
           }

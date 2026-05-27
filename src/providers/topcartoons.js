@@ -75,10 +75,17 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     if (!videoUrl) return [];
 
     return [{
+      name: "TopCartoons",
       url: videoUrl,
       quality: extractQuality(videoUrl),
       title: 'TopCartoons',
-      subtitles: []
+      subtitles: [],
+      behaviorHints: {
+        notWebReady: true,
+        proxyHeaders: {
+          request: Object.assign({}, HEADERS)
+        }
+      }
     }];
 
   } catch (e) {

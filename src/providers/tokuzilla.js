@@ -74,10 +74,17 @@ async function extractVidstackStreams(iframeSrc) {
     }
 
     return [{
+      name: "TokuZilla",
       url: m3u8,
       quality: extractQuality(m3u8),
       title: 'TokuZilla',
-      subtitles
+      subtitles,
+      behaviorHints: {
+        notWebReady: true,
+        proxyHeaders: {
+          request: Object.assign({}, HEADERS)
+        }
+      }
     }];
   } catch (e) {
     console.error('[TokuZilla] Vidstack error:', e);

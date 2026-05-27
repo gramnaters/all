@@ -45,9 +45,9 @@ async function resolveHubCloud(url) {
       if (!link) return;
 
       if (link.match(/\.(mp4|mkv|m3u8)/i)) {
-        streams.push({ url: link, quality, title: `4KHDHUB [${label}]`, headers: HEADERS });
+        streams.push({ name: "4KHDHUB", url: link, quality, title: `4KHDHUB [${label}]`, headers: HEADERS, behaviorHints: { notWebReady: true, proxyHeaders: { request: Object.assign({}, HEADERS) } } });
       } else if (label.includes("fsl") || label.includes("download") || label.includes("server") || link.startsWith("http")) {
-        streams.push({ url: link, quality, title: `4KHDHUB [${label}]`, headers: HEADERS });
+        streams.push({ name: "4KHDHUB", url: link, quality, title: `4KHDHUB [${label}]`, headers: HEADERS, behaviorHints: { notWebReady: true, proxyHeaders: { request: Object.assign({}, HEADERS) } } });
       }
     });
 
@@ -123,11 +123,18 @@ async function getStreams(tmdbId, mediaType, season, episode) {
             const href = $page(a).attr("href");
             if (href && href.startsWith("http")) {
               streams.push({
+                name: "4KHDHUB",
                 url: href,
                 quality: extractQuality(epText),
                 title: `4KHDHUB [S${season}E${episode}]`,
                 subtitles: [],
-                headers: HEADERS
+                headers: HEADERS,
+                behaviorHints: {
+                  notWebReady: true,
+                  proxyHeaders: {
+                    request: Object.assign({}, HEADERS)
+                  }
+                }
               });
             }
           });
@@ -149,16 +156,23 @@ async function getStreams(tmdbId, mediaType, season, episode) {
             const hubStreams = await resolveHubCloud(resolved);
             if (hubStreams) {
               for (const s of hubStreams) {
-                streams.push({ ...s, subtitles: [], headers: HEADERS });
+                streams.push({ name: "4KHDHUB", ...s, subtitles: [], headers: HEADERS, behaviorHints: { notWebReady: true, proxyHeaders: { request: Object.assign({}, HEADERS) } } });
               }
             }
           } else {
             streams.push({
+              name: "4KHDHUB",
               url: resolved,
               quality: extractQuality(resolved),
               title: `4KHDHUB`,
               subtitles: [],
-              headers: HEADERS
+              headers: HEADERS,
+              behaviorHints: {
+                notWebReady: true,
+                proxyHeaders: {
+                  request: Object.assign({}, HEADERS)
+                }
+              }
             });
           }
         } catch (e) {}

@@ -53,6 +53,9 @@ function atobPolyfill(str) {
 // For movies: fetches AllMovieDataList, for series: webSeriesDataList
 
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
+const HEADERS = {
+  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+};
 const CF_HEADERS = {
   "cf-access-client-id": atob("ZTNhMTVhZDk5OWRhYjdmMzU5MmYzZDg1NWUwZWM2ZWQuYWNjZXNz"),
   "cf-access-client-secret": atob("OGEyMjUzNmUyZGFjODYzNjlhMmNhYTkxMWQ1NWE4OWExMDk5MzljYzY5ZTY2NDZlNTFiZjVkODUyN2ExZGNhNQ=="),
@@ -70,7 +73,11 @@ async function searchRingZ(title, mediaType) {
   for (const ep of endpoints) {
     try {
       const url = `${BASE_URL}${ep}`;
-      const text = await (await fetch(url, { headers: CF_HEADERS})).text();
+      const resp = await fetch(url, { headers: CF_HEADERS });
+      const contentLength = parseInt(resp.headers.get("content-length") || "0");
+      if (contentLength > 5 * 1024 * 1024) continue;
+      const text = await resp.text();
+      if (text.length > 5 * 1024 * 1024) continue;
 
       // The JSON may have different structures
       let data;
@@ -119,10 +126,17 @@ async function getStreams(tmdbId, mediaType, season, episode) {
           const epMatch = key.match(/(\d+)/);
           if (epMatch && parseInt(epMatch[1]) === parseInt(episode)) {
             streams.push({
+              name: "RingZ",
               url: value,
               quality: inferQuality(value, key),
               title: `RingZ [${key}]`,
-              subtitles: []
+              subtitles: [],
+              behaviorHints: {
+                notWebReady: true,
+                proxyHeaders: {
+                  request: Object.assign({}, HEADERS)
+                }
+              }
             });
           }
         }
@@ -135,10 +149,17 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         const value = item[key];
         if (typeof value === "string" && value.startsWith("http")) {
           streams.push({
+            name: "RingZ",
             url: value,
             quality: inferQuality(value, key),
             title: `RingZ [${key}]`,
-            subtitles: []
+            subtitles: [],
+            behaviorHints: {
+              notWebReady: true,
+              proxyHeaders: {
+                request: Object.assign({}, HEADERS)
+              }
+            }
           });
         }
       }

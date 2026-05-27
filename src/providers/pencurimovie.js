@@ -68,10 +68,17 @@ async function getStreams(tmdbId, mediaType, season, episode) {
       const src = $(el).attr("data-src") || $(el).attr("src");
       if (src && src.startsWith("http")) {
         streams.push({
+          name: "Pencurimovie",
           url: src,
           quality: extractQuality(src),
           title: `Pencurimovie [Server ${i + 1}]`,
-          subtitles: []
+          subtitles: [],
+          behaviorHints: {
+            notWebReady: true,
+            proxyHeaders: {
+              request: Object.assign({}, HEADERS)
+            }
+          }
         });
       }
     });

@@ -406,6 +406,13 @@ async function extractMegaPlay(
 
           Origin:
             "https://rapid-cloud.co"
+        },
+
+        behaviorHints: {
+          notWebReady: true,
+          proxyHeaders: {
+            request: Object.assign({}, XML_HEADER)
+          }
         }
       }
     ];
@@ -793,7 +800,14 @@ async function getStreams(
           url: realUrl,
 
           quality:
-            "1080p"
+            "1080p",
+
+          behaviorHints: {
+            notWebReady: true,
+            proxyHeaders: {
+              request: Object.assign({}, XML_HEADER)
+            }
+          }
         });
       } catch (err) {
         console.log(

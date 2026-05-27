@@ -43,7 +43,11 @@ async function getStreams(tmdbId, mediaType, season, episode) {
 
     // 2. Search Cinefreak
     const searchUrl = `${BASE_URL}/search-api.php?q=${encodeURIComponent(title)}&pg=1`;
-    const searchData = await (await fetch(searchUrl, { headers: HEADERS})).json();
+    const searchResp = await fetch(searchUrl, { headers: HEADERS });
+    const searchText = await searchResp.text();
+    if (searchText.startsWith("<!DOCTYPE") || searchText.startsWith("<html")) return [];
+    let searchData;
+    try { searchData = JSON.parse(searchText); } catch (_) { return []; }
     const results = searchData.results || [];
     if (!results.length) return [];
 
@@ -82,11 +86,18 @@ async function getStreams(tmdbId, mediaType, season, episode) {
           const text = $(a).text().trim();
           if (href) {
             streams.push({
+              name: "Cinefreak",
               url: href,
               quality: extractQuality(text),
               title: `Cinefreak [${text}]`,
               subtitles: [],
-              headers: HEADERS
+              headers: HEADERS,
+              behaviorHints: {
+                notWebReady: true,
+                proxyHeaders: {
+                  request: Object.assign({}, HEADERS)
+                }
+              }
             });
           }
         });
@@ -107,22 +118,36 @@ async function getStreams(tmdbId, mediaType, season, episode) {
                   const decoded = atob(decodeURIComponent(idMatch[1])).replace(/newgo32.*/i, "").trim();
                   if (decoded.startsWith("http")) {
                     streams.push({
+                      name: "Cinefreak",
                       url: decoded,
                       quality: qual,
                       title: `Cinefreak [${qual}]`,
                       subtitles: [],
-                      headers: HEADERS
+                      headers: HEADERS,
+                      behaviorHints: {
+                        notWebReady: true,
+                        proxyHeaders: {
+                          request: Object.assign({}, HEADERS)
+                        }
+                      }
                     });
                     return;
                   }
                 }
               } catch (e) {}
               streams.push({
+                name: "Cinefreak",
                 url: href,
                 quality: qual,
                 title: `Cinefreak [${qual}]`,
                 subtitles: [],
-                headers: HEADERS
+                headers: HEADERS,
+                behaviorHints: {
+                  notWebReady: true,
+                  proxyHeaders: {
+                    request: Object.assign({}, HEADERS)
+                  }
+                }
               });
             }
           });

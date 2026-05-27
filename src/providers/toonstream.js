@@ -120,10 +120,17 @@ async function getStreams(tmdbId, mediaType, season, episode) {
               const trueLink = $server('iframe').attr('src') || '';
               if (trueLink) {
                 streams.push({
+                  name: "Toonstream",
                   url: trueLink,
                   quality: extractQuality(trueLink),
                   title: 'Toonstream',
-                  subtitles: []
+                  subtitles: [],
+                  behaviorHints: {
+                    notWebReady: true,
+                    proxyHeaders: {
+                      request: Object.assign({}, HEADERS)
+                    }
+                  }
                 });
               }
             } catch (e) { /* skip failed servers */ }
@@ -136,10 +143,17 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         const src = $page(el).attr('data-src');
         if (src) {
           streams.push({
+            name: "Toonstream",
             url: src,
             quality: extractQuality(src),
             title: 'Toonstream',
-            subtitles: []
+            subtitles: [],
+            behaviorHints: {
+              notWebReady: true,
+              proxyHeaders: {
+                request: Object.assign({}, HEADERS)
+              }
+            }
           });
         }
       });

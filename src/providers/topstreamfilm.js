@@ -67,10 +67,17 @@ async function getStreams(tmdbId, mediaType, season, episode) {
           const links = $page(el).find('a').map((_, a) => $page(a).attr('href')).get().filter(Boolean);
           for (const link of links) {
             streams.push({
+              name: "TopStreamFilm",
               url: link,
               quality: extractQuality(link),
               title: 'TopStreamFilm',
-              subtitles: []
+              subtitles: [],
+              behaviorHints: {
+                notWebReady: true,
+                proxyHeaders: {
+                  request: Object.assign({}, HEADERS)
+                }
+              }
             });
           }
         }
@@ -87,10 +94,17 @@ async function getStreams(tmdbId, mediaType, season, episode) {
             const finalLink = dataLink.startsWith('//') ? 'https:' + dataLink : dataLink;
             if (finalLink) {
               streams.push({
+                name: "TopStreamFilm",
                 url: finalLink,
                 quality: extractQuality(finalLink),
                 title: 'TopStreamFilm',
-                subtitles: []
+                subtitles: [],
+                behaviorHints: {
+                  notWebReady: true,
+                  proxyHeaders: {
+                    request: Object.assign({}, HEADERS)
+                  }
+                }
               });
             }
           });
@@ -109,10 +123,17 @@ async function getStreams(tmdbId, mediaType, season, episode) {
             const finalLink = dataLink.startsWith('//') ? 'https:' + dataLink : dataLink;
             if (finalLink) {
               streams.push({
+                name: "TopStreamFilm",
                 url: finalLink,
                 quality: extractQuality(finalLink),
                 title: 'TopStreamFilm',
-                subtitles: []
+                subtitles: [],
+                behaviorHints: {
+                  notWebReady: true,
+                  proxyHeaders: {
+                    request: Object.assign({}, HEADERS)
+                  }
+                }
               });
             }
           });

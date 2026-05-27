@@ -138,10 +138,17 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         const embedUrl = redirectResp.headers.get ? redirectResp.headers.get("location") : "";
         if (embedUrl && embedUrl.startsWith("http")) {
           streams.push({
+            name: "Goojara",
             url: embedUrl,
             quality: "720p",
             title: `Goojara`,
-            subtitles: []
+            subtitles: [],
+            behaviorHints: {
+              notWebReady: true,
+              proxyHeaders: {
+                request: Object.assign({}, HEADERS)
+              }
+            }
           });
         }
       } catch (e) {}

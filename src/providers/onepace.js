@@ -84,10 +84,17 @@ async function getStreams(tmdbId, mediaType, season, episode) {
           const src = iframeDoc("iframe").attr("src");
           if (src && src.startsWith("http")) {
             streams.push({
+              name: "OnePace",
               url: src,
               quality: "Unknown",
               title: `OnePace [Server ${i + 1}]`,
-              subtitles: []
+              subtitles: [],
+              behaviorHints: {
+                notWebReady: true,
+                proxyHeaders: {
+                  request: Object.assign({}, HEADERS)
+                }
+              }
             });
           }
         } catch (_) {}

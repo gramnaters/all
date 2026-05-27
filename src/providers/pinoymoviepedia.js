@@ -43,10 +43,17 @@ async function getStreams(tmdbId, mediaType, season, episode) {
       const src = $(el).attr("src") || $(el).attr("data-src");
       if (src && src.startsWith("http")) {
         streams.push({
+          name: "PinoyMoviePedia",
           url: src,
           quality: extractQuality(src),
           title: `PinoyMoviePedia [Server ${i + 1}]`,
-          subtitles: []
+          subtitles: [],
+          behaviorHints: {
+            notWebReady: true,
+            proxyHeaders: {
+              request: Object.assign({}, HEADERS)
+            }
+          }
         });
       }
     });

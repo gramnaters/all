@@ -63,10 +63,17 @@ async function invokeTorrentio(imdbId, season, episode) {
       const magnet = buildMagnet(stream.infoHash, trackers, stream.sources || []);
       const title = `Torrentio | ${quality} | Seeders: ${seeder}`;
       return {
+        name: "TorraStream",
         url: magnet,
         quality: extractQuality(quality),
         title,
-        subtitles: []
+        subtitles: [],
+        behaviorHints: {
+          notWebReady: true,
+          proxyHeaders: {
+            request: Object.assign({}, HEADERS)
+          }
+        }
       };
     }).filter(s => s.url);
   } catch (e) {
@@ -88,10 +95,17 @@ async function invokeThePirateBay(imdbId, season, episode) {
       const magnet = buildMagnet(stream.infoHash, trackers, []);
       const quality = extractQuality(stream.title || '');
       return {
+        name: "TorraStream",
         url: magnet,
         quality,
         title: `ThePirateBay | ${stream.title || ''}`,
-        subtitles: []
+        subtitles: [],
+        behaviorHints: {
+          notWebReady: true,
+          proxyHeaders: {
+            request: Object.assign({}, HEADERS)
+          }
+        }
       };
     }).filter(s => s.url);
   } catch (e) {
@@ -115,10 +129,17 @@ async function invokeTorrentsDB(imdbId, season, episode) {
       const seeder = title.match(/👤\s*(\d+)/)?.[1] || '0';
       const magnet = buildMagnet(stream.infoHash, [], stream.sources || []);
       return {
+        name: "TorraStream",
         url: magnet,
         quality: extractQuality(quality),
         title: `TorrentsDB | ${quality} | Seeders: ${seeder}`,
-        subtitles: []
+        subtitles: [],
+        behaviorHints: {
+          notWebReady: true,
+          proxyHeaders: {
+            request: Object.assign({}, HEADERS)
+          }
+        }
       };
     }).filter(s => s.url);
   } catch (e) {

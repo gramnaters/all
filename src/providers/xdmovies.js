@@ -651,7 +651,11 @@ function getStreams(tmdbId, mediaType = 'movie', season = null, episode = null) 
                 `${XDMOVIES_API}/php/search_api.php?query=${encodeURIComponent(mediaInfo.title)}&fuzzy=true`,
                 { headers: XDMOVIES_HEADERS }
             )
-                .then(r => r.ok ? r.json() : [])
+                .then(r => r.ok ? r.text() : '')
+                .then(text => {
+                    if (!text || text.startsWith('<!DOCTYPE') || text.startsWith('<html')) return [];
+                    try { return JSON.parse(text); } catch (_) { return []; }
+                })
                 .then(searchData => {
                     if (!Array.isArray(searchData)) return [];
 
@@ -773,7 +777,13 @@ function getStreams(tmdbId, mediaType = 'movie', season = null, episode = null) 
                                         quality,
                                         size: formatBytes(link.size),
                                         headers: link.headers,
-                                        provider: 'XDmovies'
+                                        provider: 'XDmovies',
+                                        behaviorHints: {
+                                            notWebReady: true,
+                                            proxyHeaders: {
+                                                request: Object.assign({}, HEADERS)
+                                            }
+                                        }
                                     };
                                 });
                             });

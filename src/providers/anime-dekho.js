@@ -89,10 +89,17 @@ async function getStreams(tmdbId, mediaType, season, episode) {
 
         if (iframeSrc && iframeSrc.startsWith("http")) {
           streams.push({
+            name: "AnimeDekho",
             url: iframeSrc,
             quality: "Unknown",
             title: `AnimeDekho [S${season || 1}E${epNum}]`,
-            subtitles: []
+            subtitles: [],
+            behaviorHints: {
+              notWebReady: true,
+              proxyHeaders: {
+                request: Object.assign({}, HEADERS)
+              }
+            }
           });
         }
       } catch (_) { /* skip */ }

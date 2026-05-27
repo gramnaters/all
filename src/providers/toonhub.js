@@ -62,10 +62,17 @@ async function getStreams(tmdbId, mediaType, season, episode) {
                   const link = $page(a).attr('href');
                   if (link) {
                     streams.push({
+                      name: "ToonHub",
                       url: link.replace('/file/', '/embed/'),
                       quality: extractQuality(link),
                       title: 'ToonHub4u',
-                      subtitles: []
+                      subtitles: [],
+                      behaviorHints: {
+                        notWebReady: true,
+                        proxyHeaders: {
+                          request: Object.assign({}, HEADERS)
+                        }
+                      }
                     });
                   }
                 });
@@ -81,10 +88,17 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         const link = $page(el).attr('href');
         if (link) {
           streams.push({
+            name: "ToonHub",
             url: link.replace('/file/', '/embed/'),
             quality: extractQuality(link),
             title: 'ToonHub4u',
-            subtitles: []
+            subtitles: [],
+            behaviorHints: {
+              notWebReady: true,
+              proxyHeaders: {
+                request: Object.assign({}, HEADERS)
+              }
+            }
           });
         }
       });

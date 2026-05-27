@@ -1,5 +1,6 @@
 const cheerio = require('cheerio-without-node-native');
 // netcinez.js
+// UNFIXABLE: This provider references media-player (Docker internal hostname) which cannot be resolved externally
 // Netcinez - Portuguese (Brazilian) movies/series provider via netcinez.si
 
 const BASE_URL = "https://netcinez.si";
