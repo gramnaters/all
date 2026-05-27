@@ -23,7 +23,6 @@ function extractQuality(str) {
 
 async function resolveHubCloud(url) {
   try {
-    // HubCloud: first get the #download link
     const html1 = await (await fetch(url, { headers: HEADERS})).text();
     const $1 = cheerio.load(html1);
     let href = $1("#download").attr("href") || "";
@@ -34,7 +33,6 @@ async function resolveHubCloud(url) {
       href = base + "/" + href.replace(/^\//, "");
     }
 
-    // Load the hubcloud page
     const html2 = await (await fetch(href, { headers: HEADERS})).text();
     const $2 = cheerio.load(html2);
     const header = $2("div.card-header").text() || "";
@@ -47,9 +45,9 @@ async function resolveHubCloud(url) {
       if (!link) return;
 
       if (link.match(/\.(mp4|mkv|m3u8)/i)) {
-        streams.push({ url: link, quality, title: `4KHDHUB [${label}]` });
+        streams.push({ url: link, quality, title: `4KHDHUB [${label}]`, headers: HEADERS });
       } else if (label.includes("fsl") || label.includes("download") || label.includes("server") || link.startsWith("http")) {
-        streams.push({ url: link, quality, title: `4KHDHUB [${label}]` });
+        streams.push({ url: link, quality, title: `4KHDHUB [${label}]`, headers: HEADERS });
       }
     });
 
@@ -128,7 +126,8 @@ async function getStreams(tmdbId, mediaType, season, episode) {
                 url: href,
                 quality: extractQuality(epText),
                 title: `4KHDHUB [S${season}E${episode}]`,
-                subtitles: []
+                subtitles: [],
+                headers: HEADERS
               });
             }
           });
@@ -150,7 +149,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
             const hubStreams = await resolveHubCloud(resolved);
             if (hubStreams) {
               for (const s of hubStreams) {
-                streams.push({ ...s, subtitles: [] });
+                streams.push({ ...s, subtitles: [], headers: HEADERS });
               }
             }
           } else {
@@ -158,7 +157,8 @@ async function getStreams(tmdbId, mediaType, season, episode) {
               url: resolved,
               quality: extractQuality(resolved),
               title: `4KHDHUB`,
-              subtitles: []
+              subtitles: [],
+              headers: HEADERS
             });
           }
         } catch (e) {}

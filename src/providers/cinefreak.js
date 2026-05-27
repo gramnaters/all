@@ -3,6 +3,19 @@ const cheerio = require('cheerio-without-node-native');
 // Cinefreak - Bangla/Hindi/Korean multilingual movie & series site (cinefreak.nl)
 // Search API: /search-api.php?q=...  Download links are base64-encoded redirect links
 
+const BASE64_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+function atob(str) {
+  if (!str) return '';
+  let s = String(str).replace(/=+$/, '');
+  let out = '';
+  let bc = 0, bs, buffer, idx = 0;
+  while ((buffer = BASE64_CHARS.indexOf(s.charAt(idx++))) !== -1 && ~buffer) {
+    bs = bc % 4 ? bs * 64 + buffer : buffer;
+    if (bc++ % 4) out += String.fromCharCode(255 & (bs >> ((-2 * bc) & 6)));
+  }
+  return out;
+}
+
 const BASE_URL = "https://cinefreak.nl";
 const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 const HEADERS = {
@@ -72,7 +85,8 @@ async function getStreams(tmdbId, mediaType, season, episode) {
               url: href,
               quality: extractQuality(text),
               title: `Cinefreak [${text}]`,
-              subtitles: []
+              subtitles: [],
+              headers: HEADERS
             });
           }
         });
@@ -96,7 +110,8 @@ async function getStreams(tmdbId, mediaType, season, episode) {
                       url: decoded,
                       quality: qual,
                       title: `Cinefreak [${qual}]`,
-                      subtitles: []
+                      subtitles: [],
+                      headers: HEADERS
                     });
                     return;
                   }
@@ -106,7 +121,8 @@ async function getStreams(tmdbId, mediaType, season, episode) {
                 url: href,
                 quality: qual,
                 title: `Cinefreak [${qual}]`,
-                subtitles: []
+                subtitles: [],
+                headers: HEADERS
               });
             }
           });

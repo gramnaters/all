@@ -21,8 +21,25 @@ const XML_HEADER = {
 // Utils
 // ======================
 
+const BASE64_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
 function btoa(str) {
-  return btoaPolyfill(str);
+  if (str == null) return '';
+  let s = String(str);
+  let out = '';
+  let i = 0;
+  while (i < s.length) {
+    const c1 = s.charCodeAt(i++);
+    const c2 = s.charCodeAt(i++);
+    const c3 = s.charCodeAt(i++);
+    const enc1 = c1 >> 2;
+    const enc2 = ((c1 & 3) << 4) | (c2 >> 4);
+    let enc3 = ((c2 & 15) << 2) | (c3 >> 6);
+    let enc4 = c3 & 63;
+    if (isNaN(c2)) { enc3 = 64; enc4 = 64; }
+    else if (isNaN(c3)) { enc4 = 64; }
+    out += BASE64_CHARS.charAt(enc1) + BASE64_CHARS.charAt(enc2) + BASE64_CHARS.charAt(enc3) + BASE64_CHARS.charAt(enc4);
+  }
+  return out;
 }
 
 async function fetchJson(
